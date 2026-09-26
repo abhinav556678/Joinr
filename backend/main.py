@@ -33,17 +33,20 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
+def format_developer_profile(user):
+    return f"Name: {user.get('name')}\nBio: {user.get('manual_bio')}\nIntent: {user.get('intent_status')}"
+
 class MatchRequest(BaseModel):
     user1_id: str
     user2_id: str
 
 @app.post("/calculate-match")
 async def calculate_match(req: MatchRequest):
+    # Sort user IDs once to ensure a consistent match key
+    u1, u2 = sorted([req.user1_id, req.user2_id])
+
     # 1. Check if match already exists in DB
     try:
-        # User order shouldn't matter, but we check specifically this combination
-        # To be safe, we can check both directions or enforce alphabetical ordering
-        u1, u2 = sorted([req.user1_id, req.user2_id])
         existing_match = supabase.table("matches").select("*").eq("user_a_id", u1).eq("user_b_id", u2).execute()
         if existing_match.data:
             return existing_match.data[0]
@@ -53,15 +56,15 @@ async def calculate_match(req: MatchRequest):
     if not gemini_client:
         raise HTTPException(status_code=500, detail="Gemini API Key is missing on the server.")
 
-    # 2. Fetch user profiles from DB
-    user1_res = supabase.table("users").select("id, name, manual_bio, intent_status, developer_metrics(trust_score)").eq("id", req.user1_id).execute()
-    user2_res = supabase.table("users").select("id, name, manual_bio, intent_status, developer_metrics(trust_score)").eq("id", req.user2_id).execute()
+    # 2. Fetch user profiles from DB in a single query
+    users_res = supabase.table("users").select("id, name, manual_bio, intent_status").in_("id", [u1, u2]).execute()
 
-    if not user1_res.data or not user2_res.data:
+    if not users_res.data or len(users_res.data) < 2:
         raise HTTPException(status_code=404, detail="One or both users not found.")
 
-    user1 = user1_res.data[0]
-    user2 = user2_res.data[0]
+    # We don't strictly know which is which in the array, but it doesn't matter for the LLM
+    user1 = users_res.data[0]
+    user2 = users_res.data[1]
 
     # 3. Call LLM for score and reasoning
     prompt = f"""
@@ -69,14 +72,10 @@ async def calculate_match(req: MatchRequest):
     Analyze the compatibility between these two developers.
     
     Developer 1:
-    Name: {user1.get('name')}
-    Bio: {user1.get('manual_bio')}
-    Intent: {user1.get('intent_status')}
+    {format_developer_profile(user1)}
     
     Developer 2:
-    Name: {user2.get('name')}
-    Bio: {user2.get('manual_bio')}
-    Intent: {user2.get('intent_status')}
+    {format_developer_profile(user2)}
 
     Return your assessment as a JSON object with two keys:
     - "score": an integer from 0 to 100 representing compatibility.
@@ -98,7 +97,6 @@ async def calculate_match(req: MatchRequest):
         raise HTTPException(status_code=500, detail=f"LLM Generation failed: {str(e)}")
 
     # 4. Save to database
-    u1, u2 = sorted([req.user1_id, req.user2_id])
     match_data = {
         "user_a_id": u1,
         "user_b_id": u2,
