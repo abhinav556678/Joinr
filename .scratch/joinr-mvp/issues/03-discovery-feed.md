@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] State/DB: Add a toggle in the UI that updates the `intent_status` column in the `users` table.
-- [ ] UI: Build a highly polished, vertical scrolling list of Profile Cards.
-- [ ] DB: Write a Supabase query that fetches users whose `intent_status` complements the current user's status.
-- [ ] UI: Render the fetched users into the Profile Cards, showing their manual bio and Trust Score.
+- [x] State/DB: Add a toggle in the UI that updates the `intent_status` column in the `users` table.
+- [x] UI: Build a highly polished, vertical scrolling list of Profile Cards.
+- [x] DB: Write a Supabase query that fetches users whose `intent_status` complements the current user's status.
+- [x] UI: Render the fetched users into the Profile Cards, showing their manual bio and Trust Score.
