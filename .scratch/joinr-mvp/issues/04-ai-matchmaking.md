@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] Backend: Set up a basic Python FastAPI server with an endpoint `/calculate-match`.
-- [ ] API: Integrate Gemini/OpenAI SDK in the Python backend with a strict prompt format.
-- [ ] Backend/DB: Python successfully saves the calculated score to the `matches` table to act as a cache.
-- [ ] Frontend: The React Native app hits the FastAPI endpoint when viewing a profile, displaying a skeleton loader until the score resolves.
+- [x] Backend: Set up a basic Python FastAPI server with an endpoint `/calculate-match`.
+- [x] API: Integrate Gemini/OpenAI SDK in the Python backend with a strict prompt format.
+- [x] Backend/DB: Python successfully saves the calculated score to the `matches` table to act as a cache.
+- [x] Frontend: The React Native app hits the FastAPI endpoint when viewing a profile, displaying a skeleton loader until the score resolves.
