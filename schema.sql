@@ -47,6 +47,7 @@ CREATE TABLE matches (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     user_a_id UUID REFERENCES users(id) ON DELETE CASCADE,
     user_b_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
     ai_match_score INTEGER,
     ai_reasoning TEXT,
     status TEXT DEFAULT 'PENDING', -- Options: PENDING, CONNECTED, TEAM_FORMED
