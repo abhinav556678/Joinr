@@ -10,13 +10,13 @@ CREATE TABLE users (
     name TEXT NOT NULL,
     manual_bio TEXT,
     intent_status TEXT DEFAULT 'LOOKING_TO_JOIN', -- Options: LOOKING_TO_JOIN, RECRUITING, WORKING
+    skills TEXT[],
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- 2. Developer Metrics (The automated/API data)
 CREATE TABLE developer_metrics (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE PRIMARY KEY,
-    trust_score INTEGER DEFAULT 0,
     github_json JSONB, -- Stores the raw API response from GitHub
     leetcode_json JSONB, -- Stores the raw API response from LeetCode
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
