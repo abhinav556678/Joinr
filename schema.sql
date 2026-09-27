@@ -27,6 +27,8 @@ CREATE TABLE projects (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
+    skills_required TEXT[],
+    recruiting_for TEXT,
     status TEXT DEFAULT 'IN_PROGRESS',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
