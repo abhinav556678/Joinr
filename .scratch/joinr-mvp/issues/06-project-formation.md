@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] UI: Add a "Propose Team" button to the Chat Header.
-- [ ] DB: Clicking it inserts a row into the `projects` and `project_members` tables.
-- [ ] UI: Build a "Community Feed" tab in the app's bottom navigation.
-- [ ] UI/DB: Fetch all formed `projects` and display them as global announcements on the Community Feed.
+- [x] UI: Add a "Propose Team" button to the Chat Header.
+- [x] DB: Clicking it inserts a row into the `projects` and `project_members` tables.
+- [x] UI: Build a "Community Feed" tab in the app's bottom navigation.
+- [x] UI/DB: Fetch all formed `projects` and display them as global announcements on the Community Feed.
