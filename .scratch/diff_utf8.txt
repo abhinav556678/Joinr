@@ -1,0 +1,1328 @@
+﻿diff --git a/package-lock.json b/package-lock.json
+index 29b87c5..399a108 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -18,10 +18,12 @@
+         "expo-router": "~57.0.23",
+         "expo-status-bar": "~57.0.1",
+         "react": "19.2.3",
++        "react-dom": "19.2.3",
+         "react-native": "0.86.3",
+         "react-native-safe-area-context": "~5.7.0",
+         "react-native-screens": "~4.26.0",
+         "react-native-url-polyfill": "^4.0.0",
++        "react-native-web": "^0.21.2",
+         "zustand": "^5.0.15"
+       },
+       "devDependencies": {
+@@ -3631,6 +3633,15 @@
+         "url": "https://opencollective.com/core-js"
+       }
+     },
++    "node_modules/cross-fetch": {
++      "version": "3.2.0",
++      "resolved": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.2.0.tgz",
++      "integrity": "sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==",
++      "license": "MIT",
++      "dependencies": {
++        "node-fetch": "^2.7.0"
++      }
++    },
+     "node_modules/cross-spawn": {
+       "version": "7.0.6",
+       "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz",
+@@ -3645,6 +3656,15 @@
+         "node": ">= 8"
+       }
+     },
++    "node_modules/css-in-js-utils": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/css-in-js-utils/-/css-in-js-utils-3.1.0.tgz",
++      "integrity": "sha512-fJAcud6B3rRu+KHYk+Bwf+WFL2MDCJJ1XG9x137tJQ0xYxor7XziQtuGFbWNdqrvF4Tk26O3H73nfVqXt/fW1A==",
++      "license": "MIT",
++      "dependencies": {
++        "hyphenate-style-name": "^1.0.3"
++      }
++    },
+     "node_modules/csstype": {
+       "version": "3.2.3",
+       "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
+@@ -4647,6 +4667,36 @@
+         "bser": "2.1.1"
+       }
+     },
++    "node_modules/fbjs": {
++      "version": "3.0.5",
++      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-3.0.5.tgz",
++      "integrity": "sha512-ztsSx77JBtkuMrEypfhgc3cI0+0h+svqeie7xHbh1k/IKdcydnvadp/mUaGgjAOXQmQSxsqgaRhS3q9fy+1kxg==",
++      "license": "MIT",
++      "dependencies": {
++        "cross-fetch": "^3.1.5",
++        "fbjs-css-vars": "^1.0.0",
++        "loose-envify": "^1.0.0",
++        "object-assign": "^4.1.0",
++        "promise": "^7.1.1",
++        "setimmediate": "^1.0.5",
++        "ua-parser-js": "^1.0.35"
++      }
++    },
++    "node_modules/fbjs-css-vars": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz",
++      "integrity": "sha512-b2XGFAFdWZWg0phtAWLHCk836A1Xann+I+Dgd3Gk64MHKZO44FfoD1KxyvbSh0qZsIoXQGGlVztIY+oitJPpRQ==",
++      "license": "MIT"
++    },
++    "node_modules/fbjs/node_modules/promise": {
++      "version": "7.3.1",
++      "resolved": "https://registry.npmjs.org/promise/-/promise-7.3.1.tgz",
++      "integrity": "sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==",
++      "license": "MIT",
++      "dependencies": {
++        "asap": "~2.0.3"
++      }
++    },
+     "node_modules/fetch-nodeshim": {
+       "version": "0.4.10",
+       "resolved": "https://registry.npmjs.org/fetch-nodeshim/-/fetch-nodeshim-0.4.10.tgz",
+@@ -4961,6 +5011,12 @@
+         "node": ">= 14"
+       }
+     },
++    "node_modules/hyphenate-style-name": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/hyphenate-style-name/-/hyphenate-style-name-1.1.0.tgz",
++      "integrity": "sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==",
++      "license": "BSD-3-Clause"
++    },
+     "node_modules/iceberg-js": {
+       "version": "0.8.1",
+       "resolved": "https://registry.npmjs.org/iceberg-js/-/iceberg-js-0.8.1.tgz",
+@@ -4985,6 +5041,15 @@
+       "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+       "license": "ISC"
+     },
++    "node_modules/inline-style-prefixer": {
++      "version": "7.0.1",
++      "resolved": "https://registry.npmjs.org/inline-style-prefixer/-/inline-style-prefixer-7.0.1.tgz",
++      "integrity": "sha512-lhYo5qNTQp3EvSSp3sRvXMbVQTLrvGV6DycRMJ5dm2BLMiJ30wpXKdDdgX+GmJZ5uQMucwRKHamXSst3Sj/Giw==",
++      "license": "MIT",
++      "dependencies": {
++        "css-in-js-utils": "^3.1.0"
++      }
++    },
+     "node_modules/invariant": {
+       "version": "2.2.4",
+       "resolved": "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz",
+@@ -6107,6 +6172,26 @@
+         "url": "https://opencollective.com/express"
+       }
+     },
++    "node_modules/node-fetch": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz",
++      "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
++      "license": "MIT",
++      "dependencies": {
++        "whatwg-url": "^5.0.0"
++      },
++      "engines": {
++        "node": "4.x || >=6.0.0"
++      },
++      "peerDependencies": {
++        "encoding": "^0.1.0"
++      },
++      "peerDependenciesMeta": {
++        "encoding": {
++          "optional": true
++        }
++      }
++    },
+     "node_modules/node-forge": {
+       "version": "1.4.0",
+       "resolved": "https://registry.npmjs.org/node-forge/-/node-forge-1.4.0.tgz",
+@@ -6177,6 +6262,15 @@
+         "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
+       }
+     },
++    "node_modules/object-assign": {
++      "version": "4.1.1",
++      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
++      "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
+     "node_modules/on-finished": {
+       "version": "2.3.0",
+       "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.3.0.tgz",
+@@ -6494,6 +6588,12 @@
+         "node": "^10 || ^12 || >=14"
+       }
+     },
++    "node_modules/postcss-value-parser": {
++      "version": "4.2.0",
++      "resolved": "https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz",
++      "integrity": "sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==",
++      "license": "MIT"
++    },
+     "node_modules/pretty-format": {
+       "version": "29.7.0",
+       "resolved": "https://registry.npmjs.org/pretty-format/-/pretty-format-29.7.0.tgz",
+@@ -6631,25 +6731,17 @@
+       }
+     },
+     "node_modules/react-dom": {
+-      "version": "19.3.0",
+-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.3.0.tgz",
+-      "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==",
++      "version": "19.2.3",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.3.tgz",
++      "integrity": "sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+-        "scheduler": "^0.28.0"
++        "scheduler": "^0.27.0"
+       },
+       "peerDependencies": {
+-        "react": "^19.3.0"
++        "react": "^19.2.3"
+       }
+     },
+-    "node_modules/react-dom/node_modules/scheduler": {
+-      "version": "0.28.0",
+-      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.28.0.tgz",
+-      "integrity": "sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==",
+-      "license": "MIT",
+-      "peer": true
+-    },
+     "node_modules/react-fast-compare": {
+       "version": "3.2.2",
+       "resolved": "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.2.tgz",
+@@ -6824,6 +6916,38 @@
+         "react-native": "*"
+       }
+     },
++    "node_modules/react-native-web": {
++      "version": "0.21.3",
++      "resolved": "https://registry.npmjs.org/react-native-web/-/react-native-web-0.21.3.tgz",
++      "integrity": "sha512-ozvZM0z8UWfduoKnYx03KUccM2LdHNaW8nNJu4Md0glyqWL+Ysa6dRZzMOO6Yp/hhTYT9yluwjknpd9l04uvDw==",
++      "license": "MIT",
++      "dependencies": {
++        "@babel/runtime": "^7.18.6",
++        "@react-native/normalize-colors": "^0.74.1",
++        "fbjs": "^3.0.4",
++        "inline-style-prefixer": "^7.0.1",
++        "memoize-one": "^6.0.0",
++        "nullthrows": "^1.1.1",
++        "postcss-value-parser": "^4.2.0",
++        "styleq": "^0.1.3"
++      },
++      "peerDependencies": {
++        "react": "^18.0.0 || ^19.0.0",
++        "react-dom": "^18.0.0 || ^19.0.0"
++      }
++    },
++    "node_modules/react-native-web/node_modules/@react-native/normalize-colors": {
++      "version": "0.74.89",
++      "resolved": "https://registry.npmjs.org/@react-native/normalize-colors/-/normalize-colors-0.74.89.tgz",
++      "integrity": "sha512-qoMMXddVKVhZ8PA1AbUCk83trpd6N+1nF2A6k1i6LsQObyS92fELuk8kU/lQs6M7BsMHwqyLCpQJ1uFgNvIQXg==",
++      "license": "MIT"
++    },
++    "node_modules/react-native-web/node_modules/memoize-one": {
++      "version": "6.0.0",
++      "resolved": "https://registry.npmjs.org/memoize-one/-/memoize-one-6.0.0.tgz",
++      "integrity": "sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==",
++      "license": "MIT"
++    },
+     "node_modules/react-native-worklets": {
+       "version": "0.13.0",
+       "resolved": "https://registry.npmjs.org/react-native-worklets/-/react-native-worklets-0.13.0.tgz",
+@@ -7246,6 +7370,12 @@
+       "integrity": "sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==",
+       "license": "MIT"
+     },
++    "node_modules/setimmediate": {
++      "version": "1.0.5",
++      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz",
++      "integrity": "sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==",
++      "license": "MIT"
++    },
+     "node_modules/setprototypeof": {
+       "version": "1.2.0",
+       "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+@@ -7473,6 +7603,12 @@
+       "integrity": "sha512-0MP/Cxx5SzeeZ10p/bZI0S6MpgD+yxAhi1BOQ34jgnMXsCq3j1t6tQnZu+KdlL7dvJTLT3g9xN8tl10TqgFMcg==",
+       "license": "MIT"
+     },
++    "node_modules/styleq": {
++      "version": "0.1.3",
++      "resolved": "https://registry.npmjs.org/styleq/-/styleq-0.1.3.tgz",
++      "integrity": "sha512-3ZUifmCDCQanjeej1f6kyl/BeP/Vae5EYkQ9iJfUm/QwZvlgnZzyflqAsAWYURdtea8Vkvswu2GrC57h3qffcA==",
++      "license": "MIT"
++    },
+     "node_modules/supports-color": {
+       "version": "7.2.0",
+       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz",
+@@ -7634,6 +7770,12 @@
+       "integrity": "sha512-FWAPzCIHZHnrE/5/w9MPk0kK25hSQSH2IKhYh9PyjS3SG/+IEMvlwIHbhz+oF7xl54I+ueZlVnMjyzdSwLmAwA==",
+       "license": "MIT"
+     },
++    "node_modules/tr46": {
++      "version": "0.0.3",
++      "resolved": "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz",
++      "integrity": "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==",
++      "license": "MIT"
++    },
+     "node_modules/tslib": {
+       "version": "2.8.1",
+       "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+@@ -7649,6 +7791,32 @@
+         "node": ">=8"
+       }
+     },
++    "node_modules/ua-parser-js": {
++      "version": "1.0.41",
++      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-1.0.41.tgz",
++      "integrity": "sha512-LbBDqdIC5s8iROCUjMbW1f5dJQTEFB1+KO9ogbvlb3nm9n4YHa5p4KTvFPWvh2Hs8gZMBuiB1/8+pdfe/tDPug==",
++      "funding": [
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/ua-parser-js"
++        },
++        {
++          "type": "paypal",
++          "url": "https://paypal.me/faisalman"
++        },
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/faisalman"
++        }
++      ],
++      "license": "MIT",
++      "bin": {
++        "ua-parser-js": "script/cli.js"
++      },
++      "engines": {
++        "node": "*"
++      }
++    },
+     "node_modules/undici-types": {
+       "version": "8.9.0",
+       "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-8.9.0.tgz",
+@@ -7875,12 +8043,28 @@
+         "defaults": "^1.0.3"
+       }
+     },
++    "node_modules/webidl-conversions": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz",
++      "integrity": "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==",
++      "license": "BSD-2-Clause"
++    },
+     "node_modules/whatwg-fetch": {
+       "version": "3.6.20",
+       "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-3.6.20.tgz",
+       "integrity": "sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==",
+       "license": "MIT"
+     },
++    "node_modules/whatwg-url": {
++      "version": "5.0.0",
++      "resolved": "https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz",
++      "integrity": "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==",
++      "license": "MIT",
++      "dependencies": {
++        "tr46": "~0.0.3",
++        "webidl-conversions": "^3.0.0"
++      }
++    },
+     "node_modules/whatwg-url-minimum": {
+       "version": "0.1.2",
+       "resolved": "https://registry.npmjs.org/whatwg-url-minimum/-/whatwg-url-minimum-0.1.2.tgz",
+diff --git a/package.json b/package.json
+index 196e9da..cb7dc1d 100644
+--- a/package.json
++++ b/package.json
+@@ -13,10 +13,12 @@
+     "expo-router": "~57.0.23",
+     "expo-status-bar": "~57.0.1",
+     "react": "19.2.3",
++    "react-dom": "19.2.3",
+     "react-native": "0.86.3",
+     "react-native-safe-area-context": "~5.7.0",
+     "react-native-screens": "~4.26.0",
+     "react-native-url-polyfill": "^4.0.0",
++    "react-native-web": "^0.21.2",
+     "zustand": "^5.0.15"
+   },
+   "scripts": {
+diff --git a/src/app/(tabs)/_layout.js b/src/app/(tabs)/_layout.js
+index 0bf21f9..25bb5b0 100644
+--- a/src/app/(tabs)/_layout.js
++++ b/src/app/(tabs)/_layout.js
+@@ -18,6 +18,12 @@ export default function TabLayout() {
+           title: 'Home',
+         }}
+       />
++      <Tabs.Screen
++        name="community"
++        options={{
++          title: 'Community',
++        }}
++      />
+       <Tabs.Screen
+         name="settings"
+         options={{
+diff --git a/src/app/(tabs)/community.js b/src/app/(tabs)/community.js
+new file mode 100644
+index 0000000..eb70a15
+--- /dev/null
++++ b/src/app/(tabs)/community.js
+@@ -0,0 +1,188 @@
++import React, { useState, useCallback } from 'react';
++import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
++import { useFocusEffect } from 'expo-router';
++import { fetchProjects } from '../../lib/projectApi';
++
++export default function CommunityFeed() {
++  const [projects, setProjects] = useState([]);
++  const [loading, setLoading] = useState(true);
++  const [refreshing, setRefreshing] = useState(false);
++
++  const loadData = async () => {
++    try {
++      const data = await fetchProjects();
++      setProjects(data);
++    } catch (err) {
++      console.error('Failed to fetch community projects:', err);
++    } finally {
++      setLoading(false);
++      setRefreshing(false);
++    }
++  };
++
++  useFocusEffect(
++    useCallback(() => {
++      loadData();
++    }, [])
++  );
++
++  const onRefresh = () => {
++    setRefreshing(true);
++    loadData();
++  };
++
++  const renderProject = ({ item }) => {
++    // Determine members
++    const members = item.project_members?.map(m => m.users?.name).filter(Boolean) || [];
++    const membersText = members.length > 0 ? members.join(' and ') : 'Unknown Developers';
++
++    return (
++      <View style={styles.projectCard}>
++        <View style={styles.announcementHeader}>
++          <Text style={styles.rocket}>≡ƒÜÇ</Text>
++          <Text style={styles.announcementText}>
++            <Text style={styles.bold}>{membersText}</Text> are building <Text style={styles.bold}>{item.title}</Text>
++          </Text>
++        </View>
++        
++        {item.description ? (
++          <Text style={styles.description}>{item.description}</Text>
++        ) : null}
++        
++        <View style={styles.footer}>
++          <View style={styles.badge}>
++            <Text style={styles.badgeText}>{item.status === 'IN_PROGRESS' ? 'In Progress' : item.status}</Text>
++          </View>
++          <Text style={styles.dateText}>
++            {new Date(item.created_at).toLocaleDateString()}
++          </Text>
++        </View>
++      </View>
++    );
++  };
++
++  return (
++    <View style={styles.container}>
++      <Text style={styles.headerTitle}>Community Feed</Text>
++      
++      {loading ? (
++        <View style={styles.center}>
++          <ActivityIndicator color="#58A6FF" />
++        </View>
++      ) : (
++        <FlatList
++          data={projects}
++          keyExtractor={(item) => item.id}
++          renderItem={renderProject}
++          contentContainerStyle={styles.listContent}
++          refreshControl={
++            <RefreshControl
++              refreshing={refreshing}
++              onRefresh={onRefresh}
++              tintColor="#58A6FF"
++              colors={["#58A6FF"]}
++            />
++          }
++          ListEmptyComponent={
++            <View style={styles.emptyContainer}>
++              <Text style={styles.emptyText}>No projects have been formed yet. Be the first!</Text>
++            </View>
++          }
++        />
++      )}
++    </View>
++  );
++}
++
++const styles = StyleSheet.create({
++  container: {
++    flex: 1,
++    backgroundColor: '#0D1117',
++  },
++  center: {
++    flex: 1,
++    justifyContent: 'center',
++    alignItems: 'center',
++  },
++  headerTitle: {
++    fontSize: 24,
++    fontWeight: 'bold',
++    color: '#E6EDF3',
++    padding: 20,
++    paddingTop: 60,
++    paddingBottom: 10,
++    backgroundColor: '#161B22',
++    borderBottomWidth: 1,
++    borderBottomColor: '#30363D',
++  },
++  listContent: {
++    padding: 16,
++    gap: 16,
++  },
++  projectCard: {
++    backgroundColor: '#161B22',
++    padding: 20,
++    borderRadius: 12,
++    borderWidth: 1,
++    borderColor: '#30363D',
++  },
++  announcementHeader: {
++    flexDirection: 'row',
++    alignItems: 'flex-start',
++    marginBottom: 12,
++  },
++  rocket: {
++    fontSize: 20,
++    marginRight: 10,
++    marginTop: 2,
++  },
++  announcementText: {
++    flex: 1,
++    fontSize: 16,
++    color: '#E6EDF3',
++    lineHeight: 24,
++  },
++  bold: {
++    fontWeight: 'bold',
++    color: '#58A6FF',
++  },
++  description: {
++    color: '#C9D1D9',
++    fontSize: 14,
++    lineHeight: 20,
++    marginBottom: 16,
++    paddingLeft: 30, // Aligns with text after rocket
++  },
++  footer: {
++    flexDirection: 'row',
++    justifyContent: 'space-between',
++    alignItems: 'center',
++    paddingLeft: 30,
++  },
++  badge: {
++    backgroundColor: 'rgba(46, 160, 67, 0.1)',
++    paddingHorizontal: 8,
++    paddingVertical: 4,
++    borderRadius: 12,
++    borderWidth: 1,
++    borderColor: '#3FB950',
++  },
++  badgeText: {
++    color: '#3FB950',
++    fontSize: 12,
++    fontWeight: '600',
++  },
++  dateText: {
++    color: '#8B949E',
++    fontSize: 12,
++  },
++  emptyContainer: {
++    padding: 40,
++    alignItems: 'center',
++  },
++  emptyText: {
++    color: '#8B949E',
++    fontSize: 16,
++    textAlign: 'center',
++  }
++});
+diff --git a/src/app/chat/[id].js b/src/app/chat/[id].js
+new file mode 100644
+index 0000000..5cd1290
+--- /dev/null
++++ b/src/app/chat/[id].js
+@@ -0,0 +1,365 @@
++import React, { useState, useEffect, useRef } from 'react';
++import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, Modal } from 'react-native';
++import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
++import { fetchMessages, sendMessage } from '../../lib/chatApi';
++import { proposeTeam } from '../../lib/projectApi';
++import { supabase } from '../../lib/supabase';
++import useAuthStore from '../../store/useAuthStore';
++
++export default function ChatScreen() {
++  const { id: matchId } = useLocalSearchParams();
++  const router = useRouter();
++  const { user } = useAuthStore();
++  const [messages, setMessages] = useState([]);
++  const [loading, setLoading] = useState(true);
++  const [inputText, setInputText] = useState('');
++  const [sending, setSending] = useState(false);
++  
++  // Propose Team state
++  const [proposeModalVisible, setProposeModalVisible] = useState(false);
++  const [projectTitle, setProjectTitle] = useState('');
++  const [projectDesc, setProjectDesc] = useState('');
++  const [proposing, setProposing] = useState(false);
++  
++  const flatListRef = useRef(null);
++
++  useEffect(() => {
++    loadMessages();
++
++    // Subscribe to realtime messages
++    const channel = supabase
++      .channel(`chat_${matchId}`)
++      .on(
++        'postgres_changes',
++        {
++          event: 'INSERT',
++          schema: 'public',
++          table: 'messages',
++          filter: `match_id=eq.${matchId}`,
++        },
++        (payload) => {
++          setMessages((prev) => [...prev, payload.new]);
++        }
++      )
++      .subscribe();
++
++    return () => {
++      supabase.removeChannel(channel);
++    };
++  }, [matchId]);
++
++  const loadMessages = async () => {
++    try {
++      const data = await fetchMessages(matchId);
++      setMessages(data);
++    } catch (err) {
++      console.error('Failed to load messages', err);
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  const handleSend = async () => {
++    if (!inputText.trim() || sending) return;
++    const textToSend = inputText.trim();
++    setInputText('');
++    setSending(true);
++
++    try {
++      await sendMessage(matchId, user.id, textToSend);
++    } catch (err) {
++      console.error('Failed to send message', err);
++      setInputText(textToSend);
++    } finally {
++      setSending(false);
++    }
++  };
++
++  const handleProposeTeam = async () => {
++    if (!projectTitle.trim() || proposing) return;
++    setProposing(true);
++    try {
++      await proposeTeam(matchId, projectTitle, projectDesc);
++      setProposeModalVisible(false);
++      // Optional: send a system message to chat or redirect to community feed
++      router.push('/community');
++    } catch (err) {
++      console.error('Failed to propose team:', err);
++    } finally {
++      setProposing(false);
++    }
++  };
++
++  const renderMessage = ({ item }) => {
++    const isMine = item.sender_id === user.id;
++    return (
++      <View style={[styles.messageWrapper, isMine ? styles.messageMineWrapper : styles.messageTheirsWrapper]}>
++        <View style={[styles.messageBubble, isMine ? styles.messageMine : styles.messageTheirs]}>
++          <Text style={styles.messageText}>{item.text}</Text>
++        </View>
++      </View>
++    );
++  };
++
++  return (
++    <KeyboardAvoidingView 
++      style={styles.container} 
++      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
++      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
++    >
++      <Stack.Screen 
++        options={{ 
++          title: 'Chat',
++          headerRight: () => (
++            <TouchableOpacity onPress={() => setProposeModalVisible(true)} style={styles.headerBtn}>
++              <Text style={styles.headerBtnText}>Propose Team</Text>
++            </TouchableOpacity>
++          )
++        }} 
++      />
++      
++      {loading ? (
++        <View style={styles.center}>
++          <ActivityIndicator color="#58A6FF" />
++        </View>
++      ) : (
++        <FlatList
++          ref={flatListRef}
++          data={messages}
++          keyExtractor={(item) => item.id}
++          renderItem={renderMessage}
++          contentContainerStyle={styles.listContent}
++          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
++          onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
++        />
++      )}
++
++      <View style={styles.inputContainer}>
++        <TextInput
++          style={styles.input}
++          placeholder="Type a message..."
++          placeholderTextColor="#8B949E"
++          value={inputText}
++          onChangeText={setInputText}
++          multiline
++        />
++        <TouchableOpacity style={styles.sendButton} onPress={handleSend} disabled={!inputText.trim() || sending}>
++          <Text style={[styles.sendButtonText, (!inputText.trim() || sending) && styles.sendButtonDisabled]}>Send</Text>
++        </TouchableOpacity>
++      </View>
++
++      {/* Propose Team Modal */}
++      <Modal
++        animationType="slide"
++        transparent={true}
++        visible={proposeModalVisible}
++        onRequestClose={() => setProposeModalVisible(false)}
++      >
++        <View style={styles.modalOverlay}>
++          <View style={styles.modalView}>
++            <Text style={styles.modalTitle}>Propose a Team</Text>
++            <Text style={styles.modalSubtitle}>Ready to collaborate? Form a project team to make it official.</Text>
++            
++            <TextInput
++              style={styles.modalInput}
++              placeholder="Project Name (e.g., Joinr)"
++              placeholderTextColor="#8B949E"
++              value={projectTitle}
++              onChangeText={setProjectTitle}
++            />
++            
++            <TextInput
++              style={[styles.modalInput, styles.textArea]}
++              multiline
++              placeholder="Brief description of what you're building..."
++              placeholderTextColor="#8B949E"
++              value={projectDesc}
++              onChangeText={setProjectDesc}
++            />
++            
++            <View style={styles.modalActions}>
++              <TouchableOpacity 
++                style={styles.cancelBtn} 
++                onPress={() => setProposeModalVisible(false)}
++                disabled={proposing}
++              >
++                <Text style={styles.cancelBtnText}>Cancel</Text>
++              </TouchableOpacity>
++              
++              <TouchableOpacity 
++                style={styles.submitBtn} 
++                onPress={handleProposeTeam}
++                disabled={proposing || !projectTitle.trim()}
++              >
++                {proposing ? (
++                  <ActivityIndicator color="#FFFFFF" size="small" />
++                ) : (
++                  <Text style={styles.submitBtnText}>Form Team</Text>
++                )}
++              </TouchableOpacity>
++            </View>
++          </View>
++        </View>
++      </Modal>
++    </KeyboardAvoidingView>
++  );
++}
++
++const styles = StyleSheet.create({
++  container: {
++    flex: 1,
++    backgroundColor: '#0D1117',
++  },
++  center: {
++    flex: 1,
++    justifyContent: 'center',
++    alignItems: 'center',
++  },
++  headerBtn: {
++    backgroundColor: 'rgba(63, 185, 80, 0.1)',
++    paddingHorizontal: 12,
++    paddingVertical: 6,
++    borderRadius: 6,
++    borderWidth: 1,
++    borderColor: '#3FB950',
++  },
++  headerBtnText: {
++    color: '#3FB950',
++    fontWeight: 'bold',
++    fontSize: 14,
++  },
++  listContent: {
++    padding: 16,
++    gap: 8,
++  },
++  messageWrapper: {
++    flexDirection: 'row',
++    marginBottom: 8,
++  },
++  messageMineWrapper: {
++    justifyContent: 'flex-end',
++  },
++  messageTheirsWrapper: {
++    justifyContent: 'flex-start',
++  },
++  messageBubble: {
++    maxWidth: '80%',
++    padding: 12,
++    borderRadius: 16,
++  },
++  messageMine: {
++    backgroundColor: '#1F6FEB',
++    borderBottomRightRadius: 4,
++  },
++  messageTheirs: {
++    backgroundColor: '#21262D',
++    borderBottomLeftRadius: 4,
++    borderWidth: 1,
++    borderColor: '#30363D',
++  },
++  messageText: {
++    color: '#E6EDF3',
++    fontSize: 16,
++    lineHeight: 22,
++  },
++  inputContainer: {
++    flexDirection: 'row',
++    padding: 12,
++    paddingBottom: 24,
++    backgroundColor: '#161B22',
++    borderTopWidth: 1,
++    borderTopColor: '#30363D',
++    alignItems: 'flex-end',
++  },
++  input: {
++    flex: 1,
++    backgroundColor: '#0D1117',
++    color: '#E6EDF3',
++    borderWidth: 1,
++    borderColor: '#30363D',
++    borderRadius: 20,
++    paddingHorizontal: 16,
++    paddingTop: 10,
++    paddingBottom: 10,
++    maxHeight: 100,
++    minHeight: 40,
++  },
++  sendButton: {
++    marginLeft: 12,
++    marginBottom: 10,
++  },
++  sendButtonText: {
++    color: '#58A6FF',
++    fontWeight: 'bold',
++    fontSize: 16,
++  },
++  sendButtonDisabled: {
++    color: '#484F58',
++  },
++  modalOverlay: {
++    flex: 1,
++    backgroundColor: 'rgba(0, 0, 0, 0.6)',
++    justifyContent: 'center',
++    alignItems: 'center',
++    padding: 20,
++  },
++  modalView: {
++    backgroundColor: '#161B22',
++    borderRadius: 12,
++    padding: 24,
++    width: '100%',
++    borderWidth: 1,
++    borderColor: '#30363D',
++  },
++  modalTitle: {
++    color: '#E6EDF3',
++    fontSize: 20,
++    fontWeight: 'bold',
++    marginBottom: 4,
++  },
++  modalSubtitle: {
++    color: '#8B949E',
++    fontSize: 14,
++    marginBottom: 16,
++  },
++  modalInput: {
++    backgroundColor: '#0D1117',
++    color: '#E6EDF3',
++    borderWidth: 1,
++    borderColor: '#30363D',
++    borderRadius: 6,
++    padding: 12,
++    marginBottom: 16,
++  },
++  textArea: {
++    minHeight: 80,
++    textAlignVertical: 'top',
++  },
++  modalActions: {
++    flexDirection: 'row',
++    justifyContent: 'flex-end',
++    gap: 12,
++  },
++  cancelBtn: {
++    paddingVertical: 10,
++    paddingHorizontal: 16,
++  },
++  cancelBtnText: {
++    color: '#8B949E',
++    fontWeight: '600',
++    fontSize: 16,
++  },
++  submitBtn: {
++    backgroundColor: '#3FB950',
++    paddingVertical: 10,
++    paddingHorizontal: 24,
++    borderRadius: 6,
++    minWidth: 100,
++    alignItems: 'center',
++  },
++  submitBtnText: {
++    color: '#FFFFFF',
++    fontWeight: 'bold',
++    fontSize: 16,
++  }
++});
+diff --git a/src/components/ProfileCard.js b/src/components/ProfileCard.js
+index a237d3c..dd01d46 100644
+--- a/src/components/ProfileCard.js
++++ b/src/components/ProfileCard.js
+@@ -1,14 +1,19 @@
+ import React, { useState } from 'react';
+-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
++import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ActivityIndicator } from 'react-native';
+ import { calculateMatch } from '../lib/usersApi';
++import { startChat } from '../lib/chatApi';
++import { useRouter } from 'expo-router';
+ 
+ export default function ProfileCard({ user, currentUserId }) {
++  const router = useRouter();
+   const [matchData, setMatchData] = useState(null);
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
++  const [modalVisible, setModalVisible] = useState(false);
++  const [introMessage, setIntroMessage] = useState('');
++  const [sending, setSending] = useState(false);
+ 
+   const handlePress = async () => {
+-    // If we already have the score or are loading, do nothing
+     if (matchData || loading) return;
+ 
+     setLoading(true);
+@@ -24,6 +29,20 @@ export default function ProfileCard({ user, currentUserId }) {
+     }
+   };
+ 
++  const handleConnectSubmit = async () => {
++    if (!introMessage.trim() || sending || !matchData?.id) return;
++    setSending(true);
++    try {
++      await startChat(matchData.id, currentUserId, introMessage);
++      setModalVisible(false);
++      router.push(`/chat/${matchData.id}`);
++    } catch (err) {
++      console.error('Failed to send connect message:', err);
++    } finally {
++      setSending(false);
++    }
++  };
++
+   return (
+     <TouchableOpacity 
+       style={styles.card} 
+@@ -39,7 +58,14 @@ export default function ProfileCard({ user, currentUserId }) {
+         )}
+       </View>
+       
+-      <Text style={styles.intent}>{user.intent_status === 'LOOKING_TO_JOIN' ? 'Looking to Join' : 'Recruiting'}</Text>
++      <View style={styles.tagsContainer}>
++        <Text style={styles.intent}>{user.intent_status === 'LOOKING_TO_JOIN' ? 'Looking to Join' : 'Recruiting'}</Text>
++        {user.currentProject && (
++          <View style={styles.projectBadge}>
++            <Text style={styles.projectBadgeText}>Building: {user.currentProject}</Text>
++          </View>
++        )}
++      </View>
+       
+       {user.manual_bio ? (
+         <Text style={styles.bio}>{user.manual_bio}</Text>
+@@ -47,7 +73,6 @@ export default function ProfileCard({ user, currentUserId }) {
+         <Text style={styles.emptyBio}>No bio provided.</Text>
+       )}
+ 
+-      {/* Match Section */}
+       {(loading || matchData || error) && (
+         <View style={styles.matchSection}>
+           <View style={styles.divider} />
+@@ -76,10 +101,63 @@ export default function ProfileCard({ user, currentUserId }) {
+                 </View>
+               </View>
+               <Text style={styles.matchReasoning}>{matchData.ai_reasoning}</Text>
++              
++              <TouchableOpacity 
++                style={styles.connectBtn} 
++                onPress={() => setModalVisible(true)}
++              >
++                <Text style={styles.connectBtnText}>Connect</Text>
++              </TouchableOpacity>
+             </View>
+           )}
+         </View>
+       )}
++
++      {/* Connect Modal */}
++      <Modal
++        animationType="slide"
++        transparent={true}
++        visible={modalVisible}
++        onRequestClose={() => setModalVisible(false)}
++      >
++        <View style={styles.modalOverlay}>
++          <View style={styles.modalView}>
++            <Text style={styles.modalTitle}>Introduce Yourself</Text>
++            <Text style={styles.modalSubtitle}>Send a message to {user.name}</Text>
++            
++            <TextInput
++              style={styles.textInput}
++              multiline
++              placeholder="Hey, let's build this!"
++              placeholderTextColor="#8B949E"
++              value={introMessage}
++              onChangeText={setIntroMessage}
++            />
++            
++            <View style={styles.modalActions}>
++              <TouchableOpacity 
++                style={styles.cancelBtn} 
++                onPress={() => setModalVisible(false)}
++                disabled={sending}
++              >
++                <Text style={styles.cancelBtnText}>Cancel</Text>
++              </TouchableOpacity>
++              
++              <TouchableOpacity 
++                style={styles.sendBtn} 
++                onPress={handleConnectSubmit}
++                disabled={sending || !introMessage.trim()}
++              >
++                {sending ? (
++                  <ActivityIndicator color="#FFFFFF" size="small" />
++                ) : (
++                  <Text style={styles.sendBtnText}>Send</Text>
++                )}
++              </TouchableOpacity>
++            </View>
++          </View>
++        </View>
++      </Modal>
+     </TouchableOpacity>
+   );
+ }
+@@ -118,12 +196,30 @@ const styles = StyleSheet.create({
+     fontWeight: 'bold',
+     fontSize: 14,
+   },
++  tagsContainer: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    marginBottom: 12,
++    gap: 8,
++  },
+   intent: {
+     color: '#8B949E',
+     fontSize: 14,
+-    marginBottom: 12,
+     fontWeight: '600',
+   },
++  projectBadge: {
++    backgroundColor: 'rgba(63, 185, 80, 0.1)',
++    paddingHorizontal: 8,
++    paddingVertical: 2,
++    borderRadius: 12,
++    borderWidth: 1,
++    borderColor: '#3FB950',
++  },
++  projectBadgeText: {
++    color: '#3FB950',
++    fontSize: 12,
++    fontWeight: 'bold',
++  },
+   bio: {
+     color: '#C9D1D9',
+     fontSize: 16,
+@@ -219,5 +315,81 @@ const styles = StyleSheet.create({
+     color: '#C9D1D9',
+     fontSize: 14,
+     lineHeight: 20,
++  },
++  connectBtn: {
++    backgroundColor: '#3FB950',
++    paddingVertical: 12,
++    borderRadius: 6,
++    alignItems: 'center',
++    marginTop: 16,
++  },
++  connectBtnText: {
++    color: '#FFFFFF',
++    fontWeight: 'bold',
++    fontSize: 16,
++  },
++  modalOverlay: {
++    flex: 1,
++    backgroundColor: 'rgba(0, 0, 0, 0.6)',
++    justifyContent: 'center',
++    alignItems: 'center',
++    padding: 20,
++  },
++  modalView: {
++    backgroundColor: '#161B22',
++    borderRadius: 12,
++    padding: 24,
++    width: '100%',
++    borderWidth: 1,
++    borderColor: '#30363D',
++  },
++  modalTitle: {
++    color: '#E6EDF3',
++    fontSize: 20,
++    fontWeight: 'bold',
++    marginBottom: 4,
++  },
++  modalSubtitle: {
++    color: '#8B949E',
++    fontSize: 14,
++    marginBottom: 16,
++  },
++  textInput: {
++    backgroundColor: '#0D1117',
++    color: '#C9D1D9',
++    borderWidth: 1,
++    borderColor: '#30363D',
++    borderRadius: 6,
++    padding: 12,
++    minHeight: 100,
++    textAlignVertical: 'top',
++    marginBottom: 16,
++  },
++  modalActions: {
++    flexDirection: 'row',
++    justifyContent: 'flex-end',
++    gap: 12,
++  },
++  cancelBtn: {
++    paddingVertical: 10,
++    paddingHorizontal: 16,
++  },
++  cancelBtnText: {
++    color: '#8B949E',
++    fontWeight: '600',
++    fontSize: 16,
++  },
++  sendBtn: {
++    backgroundColor: '#3FB950',
++    paddingVertical: 10,
++    paddingHorizontal: 24,
++    borderRadius: 6,
++    minWidth: 80,
++    alignItems: 'center',
++  },
++  sendBtnText: {
++    color: '#FFFFFF',
++    fontWeight: 'bold',
++    fontSize: 16,
+   }
+ });
+diff --git a/src/lib/chatApi.js b/src/lib/chatApi.js
+new file mode 100644
+index 0000000..500b1c4
+--- /dev/null
++++ b/src/lib/chatApi.js
+@@ -0,0 +1,43 @@
++import { supabase } from './supabase';
++
++export const startChat = async (matchId, senderId, text) => {
++  // Update match status to CONNECTED
++  const { error: matchError } = await supabase
++    .from('matches')
++    .update({ status: 'CONNECTED' })
++    .eq('id', matchId);
++
++  if (matchError) throw matchError;
++
++  // Insert introductory message
++  const { data, error } = await supabase
++    .from('messages')
++    .insert({ match_id: matchId, sender_id: senderId, text })
++    .select()
++    .single();
++
++  if (error) throw error;
++  return data;
++};
++
++export const sendMessage = async (matchId, senderId, text) => {
++  const { data, error } = await supabase
++    .from('messages')
++    .insert({ match_id: matchId, sender_id: senderId, text })
++    .select()
++    .single();
++
++  if (error) throw error;
++  return data;
++};
++
++export const fetchMessages = async (matchId) => {
++  const { data, error } = await supabase
++    .from('messages')
++    .select('*')
++    .eq('match_id', matchId)
++    .order('created_at', { ascending: true });
++
++  if (error) throw error;
++  return data;
++};
+diff --git a/src/lib/projectApi.js b/src/lib/projectApi.js
+new file mode 100644
+index 0000000..514973d
+--- /dev/null
++++ b/src/lib/projectApi.js
+@@ -0,0 +1,54 @@
++import { supabase } from './supabase';
++
++export const fetchProjects = async () => {
++  const { data, error } = await supabase
++    .from('projects')
++    .select(`
++      id, title, description, status, created_at,
++      project_members (
++        user_id, role, users ( name )
++      )
++    `)
++    .order('created_at', { ascending: false });
++
++  if (error) throw error;
++  return data;
++};
++
++export const proposeTeam = async (matchId, title, description) => {
++  // 1. Fetch match to get user_a_id and user_b_id
++  const { data: match, error: matchError } = await supabase
++    .from('matches')
++    .select('*')
++    .eq('id', matchId)
++    .single();
++  
++  if (matchError) throw matchError;
++
++  // 2. Update match status
++  await supabase
++    .from('matches')
++    .update({ status: 'TEAM_FORMED' })
++    .eq('id', matchId);
++
++  // 3. Create project
++  const { data: project, error: projError } = await supabase
++    .from('projects')
++    .insert({ title, description, status: 'IN_PROGRESS' })
++    .select()
++    .single();
++    
++  if (projError) throw projError;
++
++  // 4. Add both users as members
++  const { error: membersError } = await supabase
++    .from('project_members')
++    .insert([
++      { project_id: project.id, user_id: match.user_a_id, role: 'Co-Founder' },
++      { project_id: project.id, user_id: match.user_b_id, role: 'Co-Founder' }
++    ]);
++    
++  if (membersError) throw membersError;
++
++  return project;
++};
+diff --git a/src/lib/usersApi.js b/src/lib/usersApi.js
+index 759d489..cb5a83d 100644
+--- a/src/lib/usersApi.js
++++ b/src/lib/usersApi.js
+@@ -42,7 +42,8 @@ export const fetchDiscoveryFeed = async (currentUserId, currentUserIntent) => {
+       name,
+       manual_bio,
+       intent_status,
+-      developer_metrics(trust_score)
++      developer_metrics(trust_score),
++      project_members(projects(title, status))
+     `)
+     .eq('intent_status', targetIntent)
+     .neq('id', currentUserId);
+@@ -52,11 +53,12 @@ export const fetchDiscoveryFeed = async (currentUserId, currentUserIntent) => {
+   // Transform the data slightly for easier UI consumption
+   return data.map(user => {
+     // Supabase returns related table as an array or object depending on relationship.
+-    // user -> developer_metrics is one-to-one based on the schema, so it might be an array or single object.
+     const metrics = Array.isArray(user.developer_metrics) ? user.developer_metrics[0] : user.developer_metrics;
++    const activeProject = user.project_members?.find(pm => pm.projects?.status === 'IN_PROGRESS')?.projects?.title || null;
+     return {
+       ...user,
+-      trustScore: metrics?.trust_score || 0
++      trustScore: metrics?.trust_score || 0,
++      currentProject: activeProject
+     };
+   });
+ };

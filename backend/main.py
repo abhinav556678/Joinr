@@ -53,9 +53,6 @@ async def calculate_match(req: MatchRequest):
     except Exception as e:
         print(f"Error checking existing matches: {e}")
 
-    if not gemini_client:
-        raise HTTPException(status_code=500, detail="Gemini API Key is missing on the server.")
-
     # 2. Fetch user profiles from DB in a single query
     users_res = supabase.table("users").select("id, name, manual_bio, intent_status").in_("id", [u1, u2]).execute()
 
@@ -67,20 +64,23 @@ async def calculate_match(req: MatchRequest):
     user2 = users_res.data[1]
 
     # 3. Call LLM for score and reasoning
-    prompt = f"""
-    You are an AI matchmaking engine for developers.
-    Analyze the compatibility between these two developers.
-    
-    Developer 1:
-    {format_developer_profile(user1)}
-    
-    Developer 2:
-    {format_developer_profile(user2)}
+    if not gemini_client:
+        raise HTTPException(status_code=500, detail="Gemini API Key is missing on the server.")
 
-    Return your assessment as a JSON object with two keys:
-    - "score": an integer from 0 to 100 representing compatibility.
-    - "reasoning": a short string (1-2 sentences) explaining why.
-    """
+    prompt = f"""
+        You are an AI matchmaking engine for developers.
+        Analyze the compatibility between these two developers.
+        
+        Developer 1:
+        {format_developer_profile(user1)}
+        
+        Developer 2:
+        {format_developer_profile(user2)}
+
+        Return your assessment as a JSON object with two keys:
+        - "score": an integer from 0 to 100 representing compatibility.
+        - "reasoning": a short string (1-2 sentences) explaining why.
+        """
 
     try:
         response = gemini_client.models.generate_content(
