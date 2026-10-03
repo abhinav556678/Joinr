@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { supabase } from '../lib/supabase';
 import { View, ActivityIndicator } from 'react-native';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif';
 
 export default function RootLayout() {
   const { session, isInitialized, setSession } = useAuthStore();
@@ -13,6 +14,7 @@ export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
+    InstrumentSerif_400Regular,
   });
 
   useEffect(() => {
@@ -52,14 +54,14 @@ export default function RootLayout() {
 
   if (!isInitialized || !fontsLoaded) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#FDFBF7', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color="#deb785" />
+      <View style={{ flex: 1, backgroundColor: '#FAF8F5', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color="#C05C41" />
       </View>
     );
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FDFBF7' } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FAF8F5' } }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />

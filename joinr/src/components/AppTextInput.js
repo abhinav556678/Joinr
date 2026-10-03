@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput as RNTextInput } from 'react-native';
+import { TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 export default function AppTextInput({ style, ...props }) {
   let fontFamily = 'Inter_400Regular';
@@ -9,5 +9,23 @@ export default function AppTextInput({ style, ...props }) {
     fontFamily = 'Inter_700Bold';
   }
 
-  return <RNTextInput style={[{ fontFamily }, style]} {...props} />;
+  return (
+    <RNTextInput 
+      placeholderTextColor="#A0988F"
+      style={[styles.input, { fontFamily }, style]} 
+      {...props} 
+    />
+  );
 }
+
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E8E2D9',
+    borderWidth: 1,
+    color: '#1A1A1A',
+    padding: 15,
+    borderRadius: 8,
+    fontSize: 16,
+  }
+});

@@ -1,9 +1,11 @@
-import AppTextInput from '../../components/AppTextInput';
-import AppText from '../../components/AppText';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useRouter } from 'expo-router';
+import AppTextInput from '../../components/AppTextInput';
+import AppText from '../../components/AppText';
+import AppButton from '../../components/AppButton';
+import ScreenContainer from '../../components/ScreenContainer';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -30,87 +32,76 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <AppText style={styles.title}>Joinr</AppText>
-      <AppText style={styles.subtitle}>Welcome back, developer.</AppText>
+    <ScreenContainer useSafeArea style={styles.container}>
+      <View style={styles.content}>
+        <AppText variant="heading" style={styles.title}>Joinr</AppText>
+        <AppText style={styles.subtitle}>Welcome back, developer.</AppText>
 
-      <AppTextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#666666"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <AppTextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#666666"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <AppTextInput
+          style={styles.input}
+          placeholder="Email"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <AppTextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-      <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color="#FDFBF7" /> : <AppText style={styles.primaryButtonText}>Log In</AppText>}
-      </TouchableOpacity>
+        <AppButton 
+          title="Log In" 
+          onPress={handleLogin} 
+          loading={loading}
+          style={styles.button}
+        />
 
-      <TouchableOpacity onPress={() => router.push('/(auth)/signup')} style={styles.secondaryButton}>
-        <AppText style={styles.secondaryButtonText}>Don't have an account? Sign Up</AppText>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={() => router.push('/(auth)/signup')} style={styles.secondaryAction}>
+          <AppText style={styles.secondaryActionText}>Don't have an account? Sign Up</AppText>
+        </TouchableOpacity>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#FDFBF7',
-    padding: 20,
     justifyContent: 'center',
+    padding: 24,
+  },
+  content: {
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   title: {
-    fontSize: 44,
-    
-    color: '#deb785',
+    fontSize: 48,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 20,
-    color: '#333333',
+    fontSize: 16,
+    color: '#666666',
     textAlign: 'center',
     marginBottom: 40,
   },
   input: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EBE6DA',
-    borderWidth: 1,
-    color: '#333333',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 20,
+    marginBottom: 16,
   },
-  primaryButton: {
-    backgroundColor: '#deb785',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
+  button: {
+    marginTop: 8,
   },
-  primaryButtonText: {
-    color: '#FDFBF7',
-    
-    fontSize: 20,
-  },
-  secondaryButton: {
-    marginTop: 20,
+  secondaryAction: {
+    marginTop: 24,
     alignItems: 'center',
   },
-  secondaryButtonText: {
-    color: '#deb785',
-    fontSize: 18,
+  secondaryActionText: {
+    color: '#C05C41',
+    fontSize: 14,
+    fontWeight: '600',
   }
 });

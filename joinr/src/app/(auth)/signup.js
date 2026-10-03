@@ -1,9 +1,11 @@
-import AppTextInput from '../../components/AppTextInput';
-import AppText from '../../components/AppText';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useRouter } from 'expo-router';
+import AppTextInput from '../../components/AppTextInput';
+import AppText from '../../components/AppText';
+import AppButton from '../../components/AppButton';
+import ScreenContainer from '../../components/ScreenContainer';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -21,7 +23,6 @@ export default function SignupScreen() {
 
     setLoading(true);
 
-    // 1. Create the user in Supabase Auth
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -33,8 +34,7 @@ export default function SignupScreen() {
       return;
     }
 
-    // 2. Insert the manual profile into our public 'users' table
-    if (data.user) {
+    if (data?.user) {
       const { error: dbError } = await supabase.from('users').insert({
         id: data.user.id,
         email: email,
@@ -55,35 +55,94 @@ export default function SignupScreen() {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <AppText style={styles.title}>Create Profile</AppText>
-        <AppText style={styles.subtitle}>Let's build your developer identity.</AppText>
+    <ScreenContainer useSafeArea>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.content}>
+            <AppText variant="heading" style={styles.title}>Joinr</AppText>
+            <AppText style={styles.subtitle}>Create your developer identity.</AppText>
 
-        <AppTextInput style={styles.input} placeholder="Email" placeholderTextColor="#666666" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
-        <AppTextInput style={styles.input} placeholder="Password (min 6 chars)" placeholderTextColor="#666666" secureTextEntry value={password} onChangeText={setPassword} />
-        <AppTextInput style={styles.input} placeholder="Full Name or Handle" placeholderTextColor="#666666" value={name} onChangeText={setName} />
-        <AppTextInput style={[styles.input, { height: 100, textAlignVertical: 'top' }]} placeholder="Short Bio (e.g., 'React Developer looking for a UI designer...')" placeholderTextColor="#666666" multiline value={bio} onChangeText={setBio} />
+            <AppTextInput 
+              style={styles.input} 
+              placeholder="Email" 
+              autoCapitalize="none" 
+              keyboardType="email-address" 
+              value={email} 
+              onChangeText={setEmail} 
+            />
+            <AppTextInput 
+              style={styles.input} 
+              placeholder="Password (min 6 chars)" 
+              secureTextEntry 
+              value={password} 
+              onChangeText={setPassword} 
+            />
+            <AppTextInput 
+              style={styles.input} 
+              placeholder="Full Name or Handle" 
+              value={name} 
+              onChangeText={setName} 
+            />
+            <AppTextInput 
+              style={[styles.input, { height: 100, textAlignVertical: 'top' }]} 
+              placeholder="Short Bio (e.g., 'React Developer looking for a UI designer...')" 
+              multiline 
+              value={bio} 
+              onChangeText={setBio} 
+            />
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleSignup} disabled={loading}>
-          {loading ? <ActivityIndicator color="#FDFBF7" /> : <AppText style={styles.primaryButtonText}>Create Account</AppText>}
-        </TouchableOpacity>
+            <AppButton 
+              title="Create Account" 
+              onPress={handleSignup} 
+              loading={loading}
+              style={styles.button}
+            />
 
-        <TouchableOpacity onPress={() => router.back()} style={styles.secondaryButton}>
-          <AppText style={styles.secondaryButtonText}>Already have an account? Log In</AppText>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TouchableOpacity onPress={() => router.back()} style={styles.secondaryAction}>
+              <AppText style={styles.secondaryActionText}>Already have an account? Log In</AppText>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: '#FDFBF7', padding: 20, justifyContent: 'center' },
-  title: { fontSize: 36,  color: '#deb785', textAlign: 'center', marginBottom: 10 },
-  subtitle: { fontSize: 20, color: '#333333', textAlign: 'center', marginBottom: 30 },
-  input: { backgroundColor: '#FFFFFF', borderColor: '#EBE6DA', borderWidth: 1, color: '#333333', padding: 15, borderRadius: 8, marginBottom: 15, fontSize: 20 },
-  primaryButton: { backgroundColor: '#deb785', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 10 },
-  primaryButtonText: { color: '#FDFBF7',  fontSize: 20 },
-  secondaryButton: { marginTop: 20, alignItems: 'center' },
-  secondaryButtonText: { color: '#deb785', fontSize: 18 }
+  container: { 
+    flexGrow: 1, 
+    justifyContent: 'center', 
+    padding: 24 
+  },
+  content: {
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
+  },
+  title: { 
+    fontSize: 48, 
+    textAlign: 'center', 
+    marginBottom: 8 
+  },
+  subtitle: { 
+    fontSize: 16, 
+    color: '#666666', 
+    textAlign: 'center', 
+    marginBottom: 40 
+  },
+  input: { 
+    marginBottom: 16 
+  },
+  button: {
+    marginTop: 8
+  },
+  secondaryAction: { 
+    marginTop: 24, 
+    alignItems: 'center' 
+  },
+  secondaryActionText: { 
+    color: '#C05C41', 
+    fontSize: 14,
+    fontWeight: '600'
+  }
 });
