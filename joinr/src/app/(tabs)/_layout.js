@@ -1,4 +1,6 @@
 import { Tabs } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
 
 export default function TabLayout() {
   return (
@@ -6,13 +8,15 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#EBE6DA',
+          backgroundColor: '#FAF8F5',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
         },
-        tabBarActiveTintColor: '#deb785',
-        tabBarInactiveTintColor: '#666666',
+        tabBarActiveTintColor: '#C05C41',
+        tabBarInactiveTintColor: '#A0988F',
         tabBarLabelStyle: {
-          fontSize: 16,
+          fontSize: 12,
           fontFamily: 'Inter_400Regular',
         },
       }}>
@@ -20,30 +24,45 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="community"
         options={{
           title: 'Community',
-        }}
-      />
-      <Tabs.Screen
-        name="bounties"
-        options={{
-          title: 'Bounties',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="users" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="messages"
         options={{
           title: 'Messages',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="message-square" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="bounties"
+        options={{
+          title: 'Bounties',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="briefcase" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="settings" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
