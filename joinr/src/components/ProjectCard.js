@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, Modal, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { getOrCreateProjectMatch } from '../lib/chatApi';
 import AppText from './AppText';
+import AppButton from './AppButton';
+import Card from './Card';
 
 export default function ProjectCard({ project, currentUserId }) {
   const router = useRouter();
-  const [floatAnim] = useState(() => new Animated.Value(0));
-  const [modalVisible, setModalVisible] = useState(false);
   const [startingChat, setStartingChat] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleStartChat = async () => {
     if (startingChat) return;
@@ -18,7 +20,6 @@ export default function ProjectCard({ project, currentUserId }) {
       if (!recruiterId) throw new Error('No recruiter found');
       
       const match = await getOrCreateProjectMatch(currentUserId, recruiterId, project.id);
-      setModalVisible(false);
       router.push(`/chat/${match.id}`);
     } catch (error) {
       console.error('Failed to start chat', error);
@@ -27,217 +28,153 @@ export default function ProjectCard({ project, currentUserId }) {
     }
   };
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(floatAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [floatAnim]);
-
-  const translateY = floatAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -5],
-  });
+  const isOwner = project.project_members?.[0]?.user_id === currentUserId;
 
   return (
-    <>
-      <TouchableOpacity activeOpacity={0.8} onPress={() => setModalVisible(true)}>
-        <Animated.View style={[styles.card, { transform: [{ translateY }] }]}>
-          <AppText style={styles.title}>{project.title}</AppText>
-          <AppText style={styles.position}>
-            Recruiting for: <AppText style={styles.positionHighlight}>{project.recruiting_for}</AppText>
+    <Card style={styles.container}>
+      <AppText style={styles.label}>PROJECT</AppText>
+      <AppText variant="heading" style={styles.title}>{project.title}</AppText>
+      
+      <View style={styles.userInfoRow}>
+        <View style={styles.avatar}>
+          <AppText style={styles.avatarText}>
+            {project.title ? project.title.charAt(0).toUpperCase() : 'P'}
           </AppText>
+        </View>
+        <View style={styles.userInfoText}>
+          <AppText style={styles.userName}>{project.recruiting_for || 'Developer'}</AppText>
           {project.skills_required && project.skills_required.length > 0 && (
-            <View style={styles.skillsContainer}>
-              {project.skills_required.map((skill, index) => (
-                <View key={index} style={styles.skillBadge}>
-                  <AppText style={styles.skillText}>{skill}</AppText>
-                </View>
-              ))}
-            </View>
+            <AppText style={styles.userRole}>{project.skills_required.join(', ')}</AppText>
           )}
-        </Animated.View>
-      </TouchableOpacity>
-
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <ScrollView>
-              <AppText style={styles.modalTitle}>{project.title}</AppText>
-              <AppText style={styles.modalPosition}>Recruiting: {project.recruiting_for}</AppText>
-              
-              <AppText style={styles.sectionTitle}>Description</AppText>
-              <AppText style={styles.modalDescription}>{project.description || 'No description provided.'}</AppText>
-              
-              {project.skills_required && project.skills_required.length > 0 && (
-                <>
-                  <AppText style={styles.sectionTitle}>Required Skills</AppText>
-                  <View style={styles.skillsContainer}>
-                    {project.skills_required.map((skill, index) => (
-                      <View key={index} style={styles.skillBadge}>
-                        <AppText style={styles.skillText}>{skill}</AppText>
-                      </View>
-                    ))}
-                  </View>
-                </>
-              )}
-            </ScrollView>
-            <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                <AppText style={styles.closeButtonText}>Close</AppText>
-              </TouchableOpacity>
-              
-              {project.project_members?.[0]?.user_id !== currentUserId && (
-                <TouchableOpacity style={styles.chatButton} onPress={handleStartChat} disabled={startingChat}>
-                  {startingChat ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <AppText style={styles.chatButtonText}>Chat</AppText>
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
+          <View style={styles.locationRow}>
+            <Feather name="map-pin" size={12} color="#A0988F" />
+            <AppText style={styles.locationText}>Remote</AppText>
           </View>
         </View>
-      </Modal>
-    </>
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.descriptionContainer}>
+        <AppText 
+          style={styles.description} 
+          numberOfLines={expanded ? undefined : 4}
+        >
+          {project.description || 'No description provided for this project.'}
+        </AppText>
+        {project.description && project.description.length > 100 && !expanded && (
+          <TouchableOpacity onPress={() => setExpanded(true)}>
+            <AppText style={styles.readMore}>Read more ↓</AppText>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {!isOwner && (
+        <View style={styles.actionRow}>
+          <AppButton 
+            title="Pass" 
+            variant="secondary" 
+            style={styles.passButton} 
+            onPress={() => {}} 
+          />
+          <AppButton 
+            title="Connect" 
+            variant="primary" 
+            style={styles.connectButton} 
+            onPress={handleStartChat} 
+            loading={startingChat}
+          />
+        </View>
+      )}
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#EBE6DA',
-    shadowColor: '#deb785',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+  container: {
+    padding: 24,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#A0988F',
+    letterSpacing: 1.5,
+    marginBottom: 8,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 8,
+    fontSize: 32,
+    marginBottom: 20,
+    lineHeight: 36,
   },
-  position: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 12,
-  },
-  positionHighlight: {
-    fontWeight: 'bold',
-    color: '#deb785',
-  },
-  skillsContainer: {
+  userInfoRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  skillBadge: {
-    backgroundColor: '#FDFBF7',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#EBE6DA',
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  skillText: {
-    fontSize: 14,
-    color: '#333333',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#FDFBF7',
-    borderRadius: 20,
-    padding: 24,
-    width: '100%',
-    maxHeight: '80%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  modalTitle: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 8,
-  },
-  modalPosition: {
-    fontSize: 18,
-    color: '#deb785',
-    fontWeight: '600',
     marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#E8E2D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  avatarText: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#333333',
-    marginTop: 16,
-    marginBottom: 8,
+    color: '#1A1A1A',
   },
-  modalDescription: {
+  userInfoText: {
+    flex: 1,
+  },
+  userName: {
     fontSize: 16,
-    color: '#666666',
-    lineHeight: 24,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 2,
   },
-  modalActions: {
+  userRole: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 4,
+  },
+  locationRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 24,
+    alignItems: 'center',
+  },
+  locationText: {
+    fontSize: 12,
+    color: '#A0988F',
+    marginLeft: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#FAF8F5', // very subtle divider
+    marginBottom: 16,
+  },
+  descriptionContainer: {
+    marginBottom: 24,
+  },
+  description: {
+    fontSize: 15,
+    lineHeight: 24,
+    color: '#666666',
+  },
+  readMore: {
+    fontSize: 15,
+    color: '#C05C41',
+    marginTop: 8,
+    fontWeight: '500',
+  },
+  actionRow: {
+    flexDirection: 'row',
     gap: 12,
   },
-  closeButton: {
+  passButton: {
     flex: 1,
-    backgroundColor: '#EBE6DA',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
   },
-  closeButtonText: {
-    color: '#333333',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  chatButton: {
+  connectButton: {
     flex: 1,
-    backgroundColor: '#deb785',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  chatButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  }
 });

@@ -101,7 +101,7 @@ export default function HomeScreen() {
   if (loading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#deb785" />
+        <ActivityIndicator size="large" color="#C05C41" />
       </View>
     );
   }
@@ -109,12 +109,21 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <AppText style={styles.title}>Discovery Feed</AppText>
-        <TouchableOpacity onPress={signOut}>
-          <AppText style={styles.logoutText}>Log Out</AppText>
+        <AppText variant="heading" style={styles.logo}>Joinr</AppText>
+        <TouchableOpacity onPress={signOut} style={styles.avatarPlaceholder}>
+          <AppText style={styles.avatarInitials}>
+            {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+          </AppText>
         </TouchableOpacity>
       </View>
       
+      <View style={styles.heroSection}>
+        <AppText variant="heading" style={styles.heroTitle}>
+          Hello, {currentUser?.name ? currentUser.name.split(' ')[0] : 'Developer'}
+        </AppText>
+        <AppText style={styles.heroSubtitle}>Discover builders. Build together.</AppText>
+      </View>
+
       {currentUser && (
         <View style={styles.toggleWrapper}>
           <View style={[styles.sliderTrack, updatingIntent && styles.sliderTrackDisabled]}>
@@ -129,7 +138,7 @@ export default function HomeScreen() {
               <AppText style={[
                 styles.sliderText, 
                 currentUser.intent_status === 'LOOKING_TO_JOIN' && styles.sliderTextActive
-              ]}>Join</AppText>
+              ]}>Looking to Join</AppText>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -143,10 +152,10 @@ export default function HomeScreen() {
               <AppText style={[
                 styles.sliderText, 
                 currentUser.intent_status === 'RECRUITING' && styles.sliderTextActive
-              ]}>Recruit</AppText>
+              ]}>Recruiting</AppText>
             </TouchableOpacity>
           </View>
-          {updatingIntent && <ActivityIndicator style={styles.updatingSpinner} size="small" color="#deb785" />}
+          {updatingIntent && <ActivityIndicator style={styles.updatingSpinner} size="small" color="#C05C41" />}
         </View>
       )}
 
@@ -160,7 +169,7 @@ export default function HomeScreen() {
         }
         contentContainerStyle={styles.feedContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#deb785" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C05C41" />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -178,11 +187,11 @@ export default function HomeScreen() {
       <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <KeyboardAvoidingView style={styles.modalOverlay} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={styles.modalContent}>
-            <AppText style={styles.modalTitle}>Create Recruitment Post</AppText>
-            <TextInput style={styles.input} placeholder="Topic / Project Title" value={postTitle} onChangeText={setPostTitle} />
-            <TextInput style={styles.input} placeholder="Position (e.g. Frontend Developer)" value={postPosition} onChangeText={setPostPosition} />
-            <TextInput style={styles.input} placeholder="Skills Required (comma separated)" value={postSkills} onChangeText={setPostSkills} />
-            <TextInput style={[styles.input, styles.textArea]} placeholder="Description" value={postDescription} onChangeText={setPostDescription} multiline numberOfLines={4} />
+            <AppText variant="heading" style={styles.modalTitle}>Create Recruitment Post</AppText>
+            <TextInput style={styles.input} placeholder="Topic / Project Title" placeholderTextColor="#A0988F" value={postTitle} onChangeText={setPostTitle} />
+            <TextInput style={styles.input} placeholder="Position (e.g. Frontend Developer)" placeholderTextColor="#A0988F" value={postPosition} onChangeText={setPostPosition} />
+            <TextInput style={styles.input} placeholder="Skills Required (comma separated)" placeholderTextColor="#A0988F" value={postSkills} onChangeText={setPostSkills} />
+            <TextInput style={[styles.input, styles.textArea]} placeholder="Description" placeholderTextColor="#A0988F" value={postDescription} onChangeText={setPostDescription} multiline numberOfLines={4} />
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)} disabled={creatingPost}>
                 <AppText style={styles.cancelButtonText}>Cancel</AppText>
@@ -201,11 +210,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDFBF7',
+    backgroundColor: '#FAF8F5',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#FDFBF7',
+    backgroundColor: '#FAF8F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -215,27 +224,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EBE6DA',
+    paddingBottom: 16,
   },
-  title: { fontSize: 28,  color: '#333333' },
-  logoutText: { color: '#FF7B72', fontSize: 18,  },
+  logo: { 
+    fontSize: 28,  
+    color: '#1A1A1A' 
+  },
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E8E2D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarInitials: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  heroSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  heroTitle: {
+    fontSize: 40,
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: '#A0988F',
+  },
   toggleWrapper: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EBE6DA',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sliderTrack: {
     flexDirection: 'row',
-    backgroundColor: '#FDFBF7',
+    backgroundColor: '#FAF8F5',
     borderRadius: 25,
     padding: 4,
     borderWidth: 1,
-    borderColor: '#EBE6DA',
+    borderColor: '#E8E2D9',
     width: '100%',
   },
   sliderTrackDisabled: {
@@ -243,24 +276,24 @@ const styles = StyleSheet.create({
   },
   sliderOption: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 20,
   },
   sliderOptionActive: {
-    backgroundColor: '#deb785',
+    backgroundColor: '#C05C41',
   },
   sliderText: {
     color: '#666666',
-    
-    fontSize: 19,
+    fontSize: 15,
+    fontWeight: '600',
   },
   sliderTextActive: {
     color: '#ffffff',
   },
   updatingSpinner: {
     position: 'absolute',
-    right: 20,
+    right: 32,
   },
   feedContent: {
     padding: 20,
