@@ -1,8 +1,14 @@
+import React from 'react';
 import { Redirect } from 'expo-router';
+import { useAuthStore } from '../store/useAuthStore';
 
-
-// Just a dummy index that redirects; the _layout.js actually handles the real auth guarding,
-// but we need an index file so Expo Router doesn't crash on '/'
 export default function Index() {
-  return null;
+  const { session } = useAuthStore();
+
+  if (!session) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  return <Redirect href="/(tabs)" />;
 }
+

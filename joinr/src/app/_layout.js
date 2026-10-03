@@ -16,25 +16,36 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!supabase) {
+      setSession(null);
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data?.session ?? null);
+    }).catch((err) => {
+      console.warn("Auth initialization error:", err);
+      setSession(null);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
     if (!isInitialized) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const isRoot = !segments.length || segments[0] === 'index';
 
     if (!session && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (session && inAuthGroup) {
+    } else if (session && (inAuthGroup || isRoot)) {
       router.replace('/(tabs)');
     }
   }, [session, isInitialized, segments]);
