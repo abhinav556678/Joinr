@@ -1,18 +1,33 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
 import { fetchUserMatches } from '../../lib/chatApi';
 import AppText from '../../components/AppText';
+import ScreenContainer from '../../components/ScreenContainer';
 
 const MatchCard = ({ match, onPress }) => {
-  const otherName = match.otherUser?.name || 'Unknown';
-  const snippet = match.latestMessage ? match.latestMessage.text : 'No messages yet';
+  const otherName = match.otherUser?.name || 'Developer';
+  const snippet = match.latestMessage ? match.latestMessage.text : 'Start a conversation';
+  // Mock unread state for demonstration if we don't have it in data
+  const isUnread = match.hasUnread || false; 
 
   return (
-    <TouchableOpacity style={styles.matchCard} onPress={onPress}>
-      <AppText style={styles.matchName}>{otherName}</AppText>
-      <AppText style={styles.matchSnippet} numberOfLines={1}>{snippet}</AppText>
+    <TouchableOpacity style={styles.matchCard} onPress={onPress} activeOpacity={0.7}>
+      <View style={styles.avatar}>
+        <AppText style={styles.avatarText}>{otherName.charAt(0)}</AppText>
+      </View>
+      <View style={styles.matchInfo}>
+        <AppText variant="heading" style={styles.matchName}>{otherName}</AppText>
+        <AppText style={[styles.matchSnippet, isUnread && styles.matchSnippetUnread]} numberOfLines={1}>
+          {snippet}
+        </AppText>
+      </View>
+      <View style={styles.metaInfo}>
+        <AppText style={styles.timeText}>2h</AppText>
+        {isUnread && <View style={styles.unreadDot} />}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -29,6 +44,10 @@ export default function MessagesScreen() {
     }
     try {
       const data = await fetchUserMatches(session.user.id);
+      // Let's add a dummy unread to the first item for UI demonstration purposes
+      if (data && data.length > 0) {
+        data[0].hasUnread = true;
+      }
       setMatches(data);
     } catch (err) {
       console.error('Failed to load matches', err);
@@ -45,81 +64,135 @@ export default function MessagesScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#deb785" />
-      </View>
+      <ScreenContainer style={styles.center}>
+        <ActivityIndicator size="large" color="#C05C41" />
+      </ScreenContainer>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <AppText style={styles.title}>Messages</AppText>
-      {matches.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <AppText style={styles.emptyText}>No conversations yet.</AppText>
-        </View>
-      ) : (
-        <FlatList
-          data={matches}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MatchCard match={item} onPress={() => router.push(`/chat/${item.id}`)} />
-          )}
-          contentContainerStyle={styles.listContent}
-        />
-      )}
-    </View>
+    <ScreenContainer>
+      <View style={styles.header}>
+        <AppText variant="heading" style={styles.logo}>Joinr</AppText>
+        <TouchableOpacity style={styles.iconButton}>
+          <Feather name="edit" size={24} color="#1A1A1A" />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={matches}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <MatchCard match={item} onPress={() => router.push(`/chat/${item.id}`)} />
+        )}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <View style={styles.titleArea}>
+            <AppText variant="heading" style={styles.title}>Messages</AppText>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <AppText style={styles.emptyText}>No conversations yet.</AppText>
+          </View>
+        }
+      />
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FDFBF7',
-  },
   center: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FDFBF7',
   },
-  title: {
-    fontSize: 28,
-    color: '#333333',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 20,
-    fontWeight: 'bold',
+    paddingBottom: 16,
+  },
+  logo: {
+    fontSize: 28,
+    color: '#1A1A1A',
+  },
+  iconButton: {
+    padding: 4,
+  },
+  titleArea: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 40,
+    color: '#1A1A1A',
   },
   listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   matchCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#EBE6DA',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8E2D9',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#E8E2D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  avatarText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  matchInfo: {
+    flex: 1,
+    marginRight: 12,
   },
   matchName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111111',
-    marginBottom: 5,
+    fontSize: 22,
+    color: '#1A1A1A',
+    marginBottom: 4,
   },
   matchSnippet: {
-    fontSize: 16,
-    color: '#666666',
+    fontSize: 15,
+    color: '#A0988F',
+  },
+  matchSnippetUnread: {
+    color: '#1A1A1A',
+    fontWeight: '600',
+  },
+  metaInfo: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  timeText: {
+    fontSize: 13,
+    color: '#A0988F',
+    marginBottom: 6,
+  },
+  unreadDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#C05C41',
   },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 18,
-    color: '#999999',
+    fontSize: 16,
+    color: '#A0988F',
     textAlign: 'center',
   }
 });

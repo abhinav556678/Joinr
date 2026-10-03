@@ -1,20 +1,17 @@
-import AppTextInput from '../../components/AppTextInput';
-import AppText from '../../components/AppText';
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
-import { fetchUserMetrics, verifyAndUpsertMetrics, mapMetricsToViewModel } from '../../lib/developerMetricsApi';
+import { fetchDeveloperMetrics } from '../../lib/developerMetricsApi';
+import AppText from '../../components/AppText';
+import ScreenContainer from '../../components/ScreenContainer';
+import Card from '../../components/Card';
+import AppButton from '../../components/AppButton';
 
-export default function ProfileScreen() {
+export default function SettingsScreen() {
   const { session } = useAuthStore();
-  const [githubUsername, setGithubUsername] = useState('');
-  const [leetcodeUsername, setLeetcodeUsername] = useState('');
-  const [loading, setLoading] = useState(false);
-  
-  // We keep the raw metrics purely in state to pass to upsert if needed,
-  // but we drive the UI completely from the view model
-  const [rawMetrics, setRawMetrics] = useState(null);
   const [viewModel, setViewModel] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadMetrics();
@@ -23,156 +20,393 @@ export default function ProfileScreen() {
   const loadMetrics = async () => {
     if (!session?.user) return;
     try {
-      const data = await fetchUserMetrics(session.user.id);
-      if (data) {
-        setRawMetrics(data);
-        const vm = mapMetricsToViewModel(data);
-        setViewModel(vm);
-        if (vm.githubUsername) setGithubUsername(vm.githubUsername);
-        if (vm.leetcodeUsername === 'linked') setLeetcodeUsername('linked');
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleVerify = async () => {
-    if (!githubUsername && !leetcodeUsername) {
-      Alert.alert('Error', 'Please enter at least one username.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await verifyAndUpsertMetrics(
-        session.user.id,
-        githubUsername,
-        leetcodeUsername === 'linked' ? '' : leetcodeUsername, // don't refetch leetcode if it's just 'linked' unless they changed it. Actually let's assume they change it.
-        rawMetrics
-      );
-      
-      setRawMetrics(data);
-      setViewModel(mapMetricsToViewModel(data));
-      Alert.alert('Success', 'Profile verified successfully!');
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', error.message || 'An error occurred during verification.');
+      const data = await fetchDeveloperMetrics(session.user.id);
+      setViewModel(data);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSync = async () => {
+    setLoading(true);
+    await loadMetrics();
+  };
+
+  const userInitial = session?.user?.email ? session.user.email.charAt(0).toUpperCase() : 'U';
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <AppText style={styles.title}>Developer Profile</AppText>
-
-      {viewModel && viewModel.trustScore > 0 && (
-        <View style={styles.scoreContainer}>
-          <AppText style={styles.scoreTitle}>Trust Score</AppText>
-          <AppText style={styles.scoreValue}>{viewModel.trustScore}</AppText>
-          
-          {viewModel.topLanguages && viewModel.topLanguages.length > 0 && (
-            <View style={styles.languagesWrapper}>
-              <AppText style={styles.sectionSubTitle}>Top Languages</AppText>
-              <View style={styles.languagesBar}>
-                {viewModel.topLanguages.map((lang, idx) => (
-                  <View 
-                    key={idx} 
-                    style={[
-                      styles.languageBarSegment, 
-                      { 
-                        width: `${lang.percentage}%`, 
-                        backgroundColor: idx === 0 ? '#deb785' : idx === 1 ? '#deb785' : '#D2A8FF' 
-                      }
-                    ]} 
-                  />
-                ))}
-              </View>
-              <View style={styles.languagesLegend}>
-                {viewModel.topLanguages.map((lang, idx) => (
-                  <View key={idx} style={styles.legendItem}>
-                    <View style={[styles.legendDot, { backgroundColor: idx === 0 ? '#deb785' : idx === 1 ? '#deb785' : '#D2A8FF' }]} />
-                    <AppText style={styles.legendText}>{lang.name} {lang.percentage}%</AppText>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          <View style={styles.stats}>
-             {viewModel.githubUsername !== '' && (
-               <>
-                 <AppText style={styles.statText}>Repos: {viewModel.githubRepos}</AppText>
-                 <AppText style={styles.statText}>Followers: {viewModel.githubFollowers}</AppText>
-               </>
-             )}
-             {viewModel.leetcodeUsername !== '' && (
-                <AppText style={styles.statText}>LeetCode Solved: {viewModel.leetcodeSolved}</AppText>
-             )}
-          </View>
-        </View>
-      )}
-
-      <View style={styles.card}>
-        <AppText style={styles.cardTitle}>Verify Accounts</AppText>
-        
-        <AppText style={styles.label}>GitHub Username</AppText>
-        <AppTextInput
-          style={styles.input}
-          placeholder="e.g. torvalds"
-          placeholderTextColor="#666666"
-          value={githubUsername}
-          onChangeText={setGithubUsername}
-          autoCapitalize="none"
-        />
-
-        <AppText style={styles.label}>LeetCode Username</AppText>
-        <AppTextInput
-          style={styles.input}
-          placeholder="e.g. neetcode"
-          placeholderTextColor="#666666"
-          value={leetcodeUsername}
-          onChangeText={setLeetcodeUsername}
-          autoCapitalize="none"
-        />
-
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={handleVerify}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <AppText style={styles.buttonText}>Verify Data</AppText>
-          )}
+    <ScreenContainer>
+      <View style={styles.header}>
+        <AppText variant="heading" style={styles.logo}>Joinr</AppText>
+        <TouchableOpacity style={styles.iconButton}>
+          <Feather name="settings" size={24} color="#1A1A1A" />
         </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.titleArea}>
+          <AppText variant="heading" style={styles.title}>Developer Profile</AppText>
+          <AppText style={styles.subtitle}>Verified Developer Identity</AppText>
+        </View>
+
+        <Card style={styles.identityCard}>
+          <View style={styles.identityHeader}>
+            <View style={styles.avatar}>
+              <AppText style={styles.avatarText}>{userInitial}</AppText>
+            </View>
+            <View style={styles.identityInfo}>
+              <AppText style={styles.name}>{session?.user?.user_metadata?.full_name || 'Abhinav'}</AppText>
+              <View style={styles.verifiedBadgeRow}>
+                <View style={styles.verifiedIconContainer}>
+                  <Feather name="check" size={10} color="#FFFFFF" />
+                </View>
+                <AppText style={styles.verifiedText}>Verified Developer</AppText>
+              </View>
+              <AppText style={styles.bio}>Building thoughtful products at the intersection of design and technology.</AppText>
+            </View>
+          </View>
+          <View style={styles.identityFooter}>
+            <View style={styles.footerItem}>
+              <Feather name="map-pin" size={14} color="#666666" />
+              <AppText style={styles.footerText}>Bengaluru, India</AppText>
+            </View>
+            <AppText style={styles.footerSeparator}>|</AppText>
+            <View style={styles.footerItem}>
+              <Feather name="briefcase" size={14} color="#666666" />
+              <AppText style={styles.footerText}>Open to opportunities</AppText>
+            </View>
+          </View>
+        </Card>
+
+        <Card style={styles.trustScoreCard}>
+          <View style={styles.trustScoreTextCol}>
+            <AppText variant="heading" style={styles.cardTitle}>Trust Score</AppText>
+            <AppText style={styles.cardSubtitle}>A holistic view of your verified developer identity.</AppText>
+          </View>
+          <View style={styles.trustScoreCircle}>
+            <AppText variant="heading" style={styles.scoreValue}>92</AppText>
+            <AppText style={styles.scoreLabel}>/ 100</AppText>
+            <AppText style={styles.scoreVerified}>Verified</AppText>
+          </View>
+        </Card>
+
+        <Card style={styles.languagesCard}>
+          <View style={styles.languagesHeader}>
+            <AppText variant="heading" style={styles.cardTitle}>Top Languages</AppText>
+            <AppText style={styles.viewAllText}>View all ></AppText>
+          </View>
+          
+          <View style={styles.languageRow}>
+            <AppText style={styles.languageName}>TypeScript</AppText>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: '68%' }]} />
+            </View>
+            <AppText style={styles.languagePercent}>68%</AppText>
+          </View>
+
+          <View style={styles.languageRow}>
+            <AppText style={styles.languageName}>Python</AppText>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: '22%' }]} />
+            </View>
+            <AppText style={styles.languagePercent}>22%</AppText>
+          </View>
+
+          <View style={styles.languageRow}>
+            <AppText style={styles.languageName}>Rust</AppText>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: '10%' }]} />
+            </View>
+            <AppText style={styles.languagePercent}>10%</AppText>
+          </View>
+        </Card>
+
+        <View style={styles.statsGrid}>
+          <Card style={styles.gridCard}>
+            <View style={styles.gridCardHeader}>
+              <View style={styles.iconCircle}>
+                <Feather name="github" size={16} color="#FFFFFF" />
+              </View>
+              <AppText style={styles.gridCardTitle}>GitHub</AppText>
+              <Feather name="chevron-right" size={16} color="#A0988F" style={{ marginLeft: 'auto' }} />
+            </View>
+            <AppText style={styles.gridCardValue}>12 repos</AppText>
+            <AppText style={styles.gridCardSubValue}>1.4k contributions</AppText>
+          </Card>
+          
+          <Card style={styles.gridCard}>
+            <View style={styles.gridCardHeader}>
+              <View style={styles.iconCircleLeetc}>
+                <AppText style={styles.leetcodeIcon}>{"<"}</AppText>
+              </View>
+              <AppText style={styles.gridCardTitle}>LeetCode</AppText>
+              <Feather name="chevron-right" size={16} color="#A0988F" style={{ marginLeft: 'auto' }} />
+            </View>
+            <AppText style={styles.gridCardValue}>450 solved</AppText>
+            <AppText style={styles.gridCardSubValue}>Top 4% rating</AppText>
+          </Card>
+        </View>
+
+        <AppButton 
+          title="Sync Live Data" 
+          onPress={handleSync}
+          loading={loading}
+          style={styles.syncButton}
+        />
+        
+      </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FDFBF7' },
-  content: { padding: 20, paddingTop: 60 },
-  title: { fontSize: 32,  color: '#333333', marginBottom: 20 },
-  card: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 12, borderWidth: 1, borderColor: '#EBE6DA', marginBottom: 20 },
-  cardTitle: { fontSize: 22,  color: '#111111', marginBottom: 15 },
-  label: { color: '#666666', marginBottom: 8, fontSize: 18 },
-  input: { backgroundColor: '#FDFBF7', borderWidth: 1, borderColor: '#EBE6DA', borderRadius: 6, color: '#333333', padding: 12, marginBottom: 15 },
-  button: { backgroundColor: '#deb785', padding: 15, borderRadius: 6, alignItems: 'center', marginTop: 10 },
-  buttonText: { color: '#fff',  fontSize: 20 },
-  scoreContainer: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 12, borderWidth: 1, borderColor: '#deb785', marginBottom: 20, alignItems: 'center', shadowColor: '#deb785', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 10 },
-  scoreTitle: { color: '#666666', fontSize: 20, marginBottom: 5 },
-  scoreValue: { color: '#deb785', fontSize: 52,  textShadowColor: 'rgba(88, 166, 255, 0.8)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 },
-  languagesWrapper: { width: '100%', marginTop: 20, marginBottom: 15 },
-  sectionSubTitle: { color: '#666666', fontSize: 18, marginBottom: 10, textAlign: 'center' },
-  languagesBar: { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', width: '100%', marginBottom: 10 },
-  languageBarSegment: { height: '100%' },
-  languagesLegend: { flexDirection: 'row', justifyContent: 'center', gap: 15, flexWrap: 'wrap' },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendText: { color: '#333333', fontSize: 16 },
-  stats: { flexDirection: 'row', gap: 15, marginTop: 10, flexWrap: 'wrap', justifyContent: 'center' },
-  statText: { color: '#666666', fontSize: 18 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 16,
+  },
+  logo: {
+    fontSize: 28,
+    color: '#1A1A1A',
+  },
+  iconButton: {
+    padding: 4,
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingBottom: 100,
+  },
+  titleArea: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 40,
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666666',
+  },
+  identityCard: {
+    padding: 20,
+    marginBottom: 16,
+  },
+  identityHeader: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#E8E2D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  avatarText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  identityInfo: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  verifiedBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  verifiedIconContainer: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#C05C41',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
+  verifiedText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#C05C41',
+  },
+  bio: {
+    fontSize: 13,
+    color: '#666666',
+    lineHeight: 18,
+  },
+  identityFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  footerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#666666',
+  },
+  footerSeparator: {
+    fontSize: 14,
+    color: '#E8E2D9',
+    marginHorizontal: 10,
+  },
+  trustScoreCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    marginBottom: 16,
+  },
+  trustScoreTextCol: {
+    flex: 1,
+    paddingRight: 20,
+  },
+  cardTitle: {
+    fontSize: 22,
+    color: '#1A1A1A',
+    marginBottom: 6,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#666666',
+    lineHeight: 20,
+  },
+  trustScoreCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 8,
+    borderColor: '#C05C41',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scoreValue: {
+    fontSize: 32,
+    lineHeight: 32,
+    color: '#1A1A1A',
+  },
+  scoreLabel: {
+    fontSize: 12,
+    color: '#1A1A1A',
+  },
+  scoreVerified: {
+    fontSize: 10,
+    color: '#C05C41',
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  languagesCard: {
+    padding: 20,
+    marginBottom: 16,
+  },
+  languagesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  viewAllText: {
+    color: '#C05C41',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  languageName: {
+    width: 80,
+    fontSize: 14,
+    color: '#1A1A1A',
+  },
+  progressBarBg: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#E8E2D9',
+    borderRadius: 4,
+    marginHorizontal: 12,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#C05C41',
+  },
+  languagePercent: {
+    width: 32,
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'right',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 20,
+  },
+  gridCard: {
+    flex: 1,
+    padding: 16,
+    marginBottom: 0,
+  },
+  gridCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#1A1A1A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  iconCircleLeetc: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFA116',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  leetcodeIcon: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  gridCardTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  gridCardValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 2,
+  },
+  gridCardSubValue: {
+    fontSize: 13,
+    color: '#666666',
+  },
+  syncButton: {
+    marginBottom: 20,
+  }
 });
