@@ -12,6 +12,10 @@ load_dotenv()
 
 app = FastAPI()
 
+@app.get("/")
+def health_check():
+    return {"status": "awake"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
