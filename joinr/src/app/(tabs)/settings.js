@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/useAuthStore';
-import { fetchDeveloperMetrics } from '../../lib/developerMetricsApi';
+import { fetchUserMetrics, mapMetricsToViewModel } from '../../lib/developerMetricsApi';
 import AppText from '../../components/AppText';
 import ScreenContainer from '../../components/ScreenContainer';
 import Card from '../../components/Card';
@@ -20,7 +20,8 @@ export default function SettingsScreen() {
   const loadMetrics = async () => {
     if (!session?.user) return;
     try {
-      const data = await fetchDeveloperMetrics(session.user.id);
+      const metrics = await fetchUserMetrics(session.user.id);
+      const data = mapMetricsToViewModel(metrics);
       setViewModel(data);
     } catch (e) {
       console.error(e);
@@ -86,7 +87,7 @@ export default function SettingsScreen() {
             <AppText style={styles.cardSubtitle}>A holistic view of your verified developer identity.</AppText>
           </View>
           <View style={styles.trustScoreCircle}>
-            <AppText variant="heading" style={styles.scoreValue}>92</AppText>
+            <AppText variant="heading" style={styles.scoreValue}>{viewModel?.trustScore || 0}</AppText>
             <AppText style={styles.scoreLabel}>/ 100</AppText>
             <AppText style={styles.scoreVerified}>Verified</AppText>
           </View>
@@ -98,29 +99,19 @@ export default function SettingsScreen() {
             <AppText style={styles.viewAllText}>View all ></AppText>
           </View>
           
-          <View style={styles.languageRow}>
-            <AppText style={styles.languageName}>TypeScript</AppText>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '68%' }]} />
-            </View>
-            <AppText style={styles.languagePercent}>68%</AppText>
-          </View>
-
-          <View style={styles.languageRow}>
-            <AppText style={styles.languageName}>Python</AppText>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '22%' }]} />
-            </View>
-            <AppText style={styles.languagePercent}>22%</AppText>
-          </View>
-
-          <View style={styles.languageRow}>
-            <AppText style={styles.languageName}>Rust</AppText>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '10%' }]} />
-            </View>
-            <AppText style={styles.languagePercent}>10%</AppText>
-          </View>
+          {viewModel?.topLanguages?.length > 0 ? (
+            viewModel.topLanguages.map((lang, idx) => (
+              <View key={idx} style={styles.languageRow}>
+                <AppText style={styles.languageName}>{lang.name}</AppText>
+                <View style={styles.progressBarBg}>
+                  <View style={[styles.progressBarFill, { width: `${lang.percentage}%` }]} />
+                </View>
+                <AppText style={styles.languagePercent}>{lang.percentage}%</AppText>
+              </View>
+            ))
+          ) : (
+            <AppText style={{ color: '#666' }}>No language data available.</AppText>
+          )}
         </Card>
 
         <View style={styles.statsGrid}>
@@ -132,8 +123,8 @@ export default function SettingsScreen() {
               <AppText style={styles.gridCardTitle}>GitHub</AppText>
               <Feather name="chevron-right" size={16} color="#A0988F" style={{ marginLeft: 'auto' }} />
             </View>
-            <AppText style={styles.gridCardValue}>12 repos</AppText>
-            <AppText style={styles.gridCardSubValue}>1.4k contributions</AppText>
+            <AppText style={styles.gridCardValue}>{viewModel?.githubRepos || 0} repos</AppText>
+            <AppText style={styles.gridCardSubValue}>{viewModel?.githubFollowers || 0} followers</AppText>
           </Card>
           
           <Card style={styles.gridCard}>
@@ -144,8 +135,8 @@ export default function SettingsScreen() {
               <AppText style={styles.gridCardTitle}>LeetCode</AppText>
               <Feather name="chevron-right" size={16} color="#A0988F" style={{ marginLeft: 'auto' }} />
             </View>
-            <AppText style={styles.gridCardValue}>450 solved</AppText>
-            <AppText style={styles.gridCardSubValue}>Top 4% rating</AppText>
+            <AppText style={styles.gridCardValue}>{viewModel?.leetcodeSolved || 0} solved</AppText>
+            <AppText style={styles.gridCardSubValue}>{viewModel?.leetcodeUsername === 'linked' ? 'Verified' : 'Not linked'}</AppText>
           </Card>
         </View>
 

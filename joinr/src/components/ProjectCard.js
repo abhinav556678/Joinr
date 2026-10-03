@@ -12,14 +12,16 @@ export default function ProjectCard({ project, currentUserId }) {
   const [startingChat, setStartingChat] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
+  const ownerId = project.project_members?.[0]?.user_id;
+  const isOwner = ownerId === currentUserId;
+
   const handleStartChat = async () => {
     if (startingChat) return;
     setStartingChat(true);
     try {
-      const recruiterId = project.project_members?.[0]?.user_id;
-      if (!recruiterId) throw new Error('No recruiter found');
+      if (!ownerId) throw new Error('No recruiter found');
       
-      const match = await getOrCreateProjectMatch(currentUserId, recruiterId, project.id);
+      const match = await getOrCreateProjectMatch(currentUserId, ownerId, project.id);
       router.push(`/chat/${match.id}`);
     } catch (error) {
       console.error('Failed to start chat', error);
@@ -27,8 +29,6 @@ export default function ProjectCard({ project, currentUserId }) {
       setStartingChat(false);
     }
   };
-
-  const isOwner = project.project_members?.[0]?.user_id === currentUserId;
 
   return (
     <Card style={styles.container}>

@@ -44,10 +44,6 @@ export default function MessagesScreen() {
     }
     try {
       const data = await fetchUserMatches(session.user.id);
-      // Let's add a dummy unread to the first item for UI demonstration purposes
-      if (data && data.length > 0) {
-        data[0].hasUnread = true;
-      }
       setMatches(data);
     } catch (err) {
       console.error('Failed to load matches', err);

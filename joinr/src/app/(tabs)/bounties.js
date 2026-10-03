@@ -1,46 +1,48 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AppText from '../../components/AppText';
 import ScreenContainer from '../../components/ScreenContainer';
 import Pill from '../../components/Pill';
 import BountyCard from '../../components/BountyCard';
-
-const DUMMY_BOUNTIES = [
-  {
-    id: '1',
-    type: 'BUG FIX',
-    duration: '30m',
-    title: 'Debug React Native Reanimated issue',
-    price: '150',
-    description: 'App throws "worklet value cannot be shared across threads" when using Reanimated 3. Need help identifying and fixing the issue.',
-    tags: ['React Native', 'Reanimated', 'TypeScript'],
-    user: {
-      name: 'Daniel Kim',
-      role: 'Product Engineer @ Vercel',
-      verified: true
-    }
-  },
-  {
-    id: '2',
-    type: 'REVIEW',
-    duration: '30m',
-    title: 'Supabase RLS Policy Review',
-    price: '90',
-    description: "Looking for a review of our RLS policies for a multi-tenant SaaS app. Want to make sure we're not missing any edge cases.",
-    tags: ['Supabase', 'PostgreSQL', 'Security'],
-    user: {
-      name: 'Priya Sharma',
-      role: 'CTO @ Steady',
-      verified: true
-    }
-  }
-];
+import { fetchBounties } from '../../lib/bountyApi';
 
 const CATEGORIES = ['All', 'React Native', 'Supabase', 'Architecture'];
 
 export default function BountiesScreen() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [bounties, setBounties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadBounties();
+  }, []);
+
+  const loadBounties = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchBounties();
+      const mapped = data.map(b => ({
+        id: b.id,
+        type: 'BOUNTY',
+        duration: 'TBD',
+        title: b.title,
+        price: '--',
+        description: b.description,
+        tags: [],
+        user: {
+          name: b.users?.name || 'Unknown',
+          role: 'Developer',
+          verified: true
+        }
+      }));
+      setBounties(mapped);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScreenContainer>
@@ -57,35 +59,41 @@ export default function BountiesScreen() {
         </View>
       </View>
 
-      <FlatList
-        data={DUMMY_BOUNTIES}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <BountyCard bounty={item} />}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <>
-            <View style={styles.titleArea}>
-              <AppText variant="heading" style={styles.title}>Micro-Bounties</AppText>
-              <AppText style={styles.subtitle}>Find quick tasks, earn bounties, and build credibility.</AppText>
-            </View>
-            
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoriesContainer}
-            >
-              {CATEGORIES.map(cat => (
-                <Pill 
-                  key={cat} 
-                  label={cat} 
-                  active={activeCategory === cat} 
-                  onPress={() => setActiveCategory(cat)} 
-                />
-              ))}
-            </ScrollView>
-          </>
-        }
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#C05C41" />
+        </View>
+      ) : (
+        <FlatList
+          data={bounties}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <BountyCard bounty={item} />}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            <>
+              <View style={styles.titleArea}>
+                <AppText variant="heading" style={styles.title}>Micro-Bounties</AppText>
+                <AppText style={styles.subtitle}>Find quick tasks, earn bounties, and build credibility.</AppText>
+              </View>
+              
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoriesContainer}
+              >
+                {CATEGORIES.map(cat => (
+                  <Pill 
+                    key={cat} 
+                    label={cat} 
+                    active={activeCategory === cat} 
+                    onPress={() => setActiveCategory(cat)} 
+                  />
+                ))}
+              </ScrollView>
+            </>
+          }
+        />
+      )}
 
       <TouchableOpacity style={styles.fab} activeOpacity={0.9}>
         <Feather name="plus" size={20} color="#FFFFFF" />
@@ -169,5 +177,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40,
   }
 });

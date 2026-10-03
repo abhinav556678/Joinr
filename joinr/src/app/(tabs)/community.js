@@ -1,35 +1,42 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AppText from '../../components/AppText';
 import ScreenContainer from '../../components/ScreenContainer';
 import Pill from '../../components/Pill';
 import FeedCard from '../../components/FeedCard';
-
-// Dummy Data exactly like the design
-const DUMMY_FEED = [
-  {
-    id: '1',
-    members: ['David Kim', 'Alex Rivera'],
-    title: 'Expo Web3 Starter',
-    description: 'A modern starter kit for building Web3 mobile apps with Expo. Includes wallet connection, onchain data hooks, and a clean, scalable project structure.',
-    tags: ['Expo', 'Wagmi', 'Solidity'],
-    status: 'IN_PROGRESS'
-  },
-  {
-    id: '2',
-    members: ['Sarah Chen', 'Mark Lin'],
-    title: 'Supabase Analytics',
-    description: 'Open source analytics dashboard for Supabase projects. Real-time metrics, beautiful charts, and easy setup for indie hackers.',
-    tags: ['Supabase', 'Next.js', 'TypeScript'],
-    status: 'IN_PROGRESS'
-  }
-];
+import { fetchProjects } from '../../lib/projectApi';
 
 const CATEGORIES = ['All', 'Building', 'Design', 'Looking for', 'Completed'];
 
 export default function CommunityFeed() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [feed, setFeed] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchProjects();
+      const mapped = data.map(p => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        tags: p.skills_required || [],
+        status: p.status,
+        members: p.project_members?.map(m => m.users?.name).filter(Boolean) || []
+      }));
+      setFeed(mapped);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScreenContainer>
@@ -45,35 +52,41 @@ export default function CommunityFeed() {
         </View>
       </View>
 
-      <FlatList
-        data={DUMMY_FEED}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeedCard item={item} />}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <>
-            <View style={styles.titleArea}>
-              <AppText variant="heading" style={styles.title}>Community Feed</AppText>
-              <AppText style={styles.subtitle}>Collaborations & Projects</AppText>
-            </View>
-            
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoriesContainer}
-            >
-              {CATEGORIES.map(cat => (
-                <Pill 
-                  key={cat} 
-                  label={cat} 
-                  active={activeCategory === cat} 
-                  onPress={() => setActiveCategory(cat)} 
-                />
-              ))}
-            </ScrollView>
-          </>
-        }
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#C05C41" />
+        </View>
+      ) : (
+        <FlatList
+          data={feed}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <FeedCard item={item} />}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            <>
+              <View style={styles.titleArea}>
+                <AppText variant="heading" style={styles.title}>Community Feed</AppText>
+                <AppText style={styles.subtitle}>Collaborations & Projects</AppText>
+              </View>
+              
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoriesContainer}
+              >
+                {CATEGORIES.map(cat => (
+                  <Pill 
+                    key={cat} 
+                    label={cat} 
+                    active={activeCategory === cat} 
+                    onPress={() => setActiveCategory(cat)} 
+                  />
+                ))}
+              </ScrollView>
+            </>
+          }
+        />
+      )}
     </ScreenContainer>
   );
 }
@@ -126,5 +139,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 100,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40,
   }
 });
