@@ -1,360 +1,173 @@
-import AppTextInput from '../../components/AppTextInput';
+import React, { useState } from 'react';
+import { View, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import AppText from '../../components/AppText';
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, TextInput } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useAuthStore } from '../../store/useAuthStore';
-import { fetchBounties, createBounty, resolveBounty, getOrCreateMatch } from '../../lib/bountyApi';
-import { startChat } from '../../lib/chatApi';
-import CustomModal from '../../components/CustomModal';
+import ScreenContainer from '../../components/ScreenContainer';
+import Pill from '../../components/Pill';
+import BountyCard from '../../components/BountyCard';
+
+const DUMMY_BOUNTIES = [
+  {
+    id: '1',
+    type: 'BUG FIX',
+    duration: '30m',
+    title: 'Debug React Native Reanimated issue',
+    price: '150',
+    description: 'App throws "worklet value cannot be shared across threads" when using Reanimated 3. Need help identifying and fixing the issue.',
+    tags: ['React Native', 'Reanimated', 'TypeScript'],
+    user: {
+      name: 'Daniel Kim',
+      role: 'Product Engineer @ Vercel',
+      verified: true
+    }
+  },
+  {
+    id: '2',
+    type: 'REVIEW',
+    duration: '30m',
+    title: 'Supabase RLS Policy Review',
+    price: '90',
+    description: "Looking for a review of our RLS policies for a multi-tenant SaaS app. Want to make sure we're not missing any edge cases.",
+    tags: ['Supabase', 'PostgreSQL', 'Security'],
+    user: {
+      name: 'Priya Sharma',
+      role: 'CTO @ Steady',
+      verified: true
+    }
+  }
+];
+
+const CATEGORIES = ['All', 'React Native', 'Supabase', 'Architecture'];
 
 export default function BountiesScreen() {
-  const router = useRouter();
-  const { session } = useAuthStore();
-  const currentUserId = session?.user?.id;
-
-  const [bounties, setBounties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Modals state
-  const [postModalVisible, setPostModalVisible] = useState(false);
-  const [connectModalVisible, setConnectModalVisible] = useState(false);
-  
-  // Post Bounty state
-  const [bountyTitle, setBountyTitle] = useState('');
-  const [bountyDescription, setBountyDescription] = useState('');
-  const [posting, setPosting] = useState(false);
-
-  // Connect state
-  const [selectedBounty, setSelectedBounty] = useState(null);
-  const [introMessage, setIntroMessage] = useState('');
-  const [connecting, setConnecting] = useState(false);
-
-  const loadData = async () => {
-    try {
-      const data = await fetchBounties();
-      setBounties(data);
-    } catch (err) {
-      console.error('Failed to fetch bounties:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    loadData();
-  };
-
-  const handlePostBounty = async () => {
-    if (!bountyTitle.trim() || !bountyDescription.trim() || posting) return;
-    setPosting(true);
-    try {
-      await createBounty(currentUserId, bountyTitle, bountyDescription);
-      setPostModalVisible(false);
-      setBountyTitle('');
-      setBountyDescription('');
-      loadData();
-    } catch (err) {
-      console.error('Failed to post bounty:', err);
-    } finally {
-      setPosting(false);
-    }
-  };
-
-  const openConnectModal = (bounty) => {
-    if (bounty.creator_id === currentUserId) return; // Don't connect to own bounty
-    setSelectedBounty(bounty);
-    setIntroMessage(`Hey! I saw your bounty "${bounty.title}" and I can help.`);
-    setConnectModalVisible(true);
-  };
-
-  const handleConnectSubmit = async () => {
-    if (!introMessage.trim() || connecting || !selectedBounty) return;
-    setConnecting(true);
-    try {
-      const match = await getOrCreateMatch(currentUserId, selectedBounty.creator_id);
-      await startChat(match.id, currentUserId, introMessage);
-      setConnectModalVisible(false);
-      router.push(`/chat/${match.id}`);
-    } catch (err) {
-      console.error('Failed to connect:', err);
-    } finally {
-      setConnecting(false);
-      setSelectedBounty(null);
-    }
-  };
-
-  const renderBounty = ({ item }) => {
-    const isMine = item.creator_id === currentUserId;
-    
-    return (
-      <TouchableOpacity 
-        style={styles.card} 
-        onPress={() => !isMine && openConnectModal(item)}
-        disabled={isMine}
-        activeOpacity={0.8}
-      >
-        <View style={styles.cardHeader}>
-          <AppText style={styles.title}>{item.title}</AppText>
-          {isMine && (
-            <View style={styles.mineBadge}>
-              <AppText style={styles.mineBadgeText}>Your Bounty</AppText>
-            </View>
-          )}
-        </View>
-        <AppText style={styles.description}>{item.description}</AppText>
-        <View style={styles.footer}>
-          <AppText style={styles.creatorName}>Posted by {item.users?.name || 'Unknown'}</AppText>
-          <AppText style={styles.dateText}>{new Date(item.created_at).toLocaleDateString()}</AppText>
-        </View>
-        
-        {isMine && (
-          <TouchableOpacity 
-            style={styles.resolveBtn} 
-            onPress={async () => {
-              try {
-                await resolveBounty(item.id);
-                loadData();
-              } catch (err) {
-                console.error('Failed to resolve bounty:', err);
-              }
-            }}
-          >
-            <AppText style={styles.resolveBtnText}>Mark as Resolved</AppText>
-          </TouchableOpacity>
-        )}
-      </TouchableOpacity>
-    );
-  };
+  const [activeCategory, setActiveCategory] = useState('All');
 
   return (
-    <View style={styles.container}>
-      <AppText style={styles.headerTitle}>Micro-Bounties</AppText>
-      
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color="#deb785" />
+    <ScreenContainer>
+      <View style={styles.header}>
+        <AppText variant="heading" style={styles.logo}>Joinr</AppText>
+        <View style={styles.headerIcons}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Feather name="search" size={24} color="#1A1A1A" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <Feather name="bell" size={24} color="#1A1A1A" />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={bounties}
-          keyExtractor={(item) => item.id}
-          renderItem={renderBounty}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor="#deb785"
-            />
-          }
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <AppText style={styles.emptyText}>No active bounties. Be the first to post one!</AppText>
+      </View>
+
+      <FlatList
+        data={DUMMY_BOUNTIES}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <BountyCard bounty={item} />}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <>
+            <View style={styles.titleArea}>
+              <AppText variant="heading" style={styles.title}>Micro-Bounties</AppText>
+              <AppText style={styles.subtitle}>Find quick tasks, earn bounties, and build credibility.</AppText>
             </View>
-          }
-        />
-      )}
+            
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesContainer}
+            >
+              {CATEGORIES.map(cat => (
+                <Pill 
+                  key={cat} 
+                  label={cat} 
+                  active={activeCategory === cat} 
+                  onPress={() => setActiveCategory(cat)} 
+                />
+              ))}
+            </ScrollView>
+          </>
+        }
+      />
 
-      <TouchableOpacity 
-        style={styles.fab} 
-        onPress={() => setPostModalVisible(true)}
-      >
-        <AppText style={styles.fabText}>+ Post Bounty</AppText>
+      <TouchableOpacity style={styles.fab} activeOpacity={0.9}>
+        <Feather name="plus" size={20} color="#FFFFFF" />
+        <AppText style={styles.fabText}>Post</AppText>
       </TouchableOpacity>
-
-      {/* Post Bounty Modal */}
-      <CustomModal
-        visible={postModalVisible}
-        onClose={() => setPostModalVisible(false)}
-        title="Post a Bounty"
-        subtitle="Need help with a small task? Let the community know."
-        onConfirm={handlePostBounty}
-        confirmText="Post"
-        isConfirming={posting}
-        confirmDisabled={!bountyTitle.trim() || !bountyDescription.trim()}
-      >
-        <AppTextInput
-          style={styles.input}
-          placeholder="What do you need help with?"
-          placeholderTextColor="#666666"
-          value={bountyTitle}
-          onChangeText={setBountyTitle}
-        />
-        <AppTextInput
-          style={[styles.input, styles.textArea]}
-          multiline
-          placeholder="Provide more details so others know how to help..."
-          placeholderTextColor="#666666"
-          value={bountyDescription}
-          onChangeText={setBountyDescription}
-        />
-      </CustomModal>
-
-      {/* Connect Modal */}
-      <CustomModal
-        visible={connectModalVisible}
-        onClose={() => setConnectModalVisible(false)}
-        title="Offer Help"
-        subtitle={selectedBounty ? `Send a message to ${selectedBounty.users?.name}` : ''}
-        onConfirm={handleConnectSubmit}
-        confirmText="Send Message"
-        isConfirming={connecting}
-        confirmDisabled={!introMessage.trim()}
-      >
-        <AppTextInput
-          style={[styles.input, styles.textArea]}
-          multiline
-          placeholder="Hey, let's build this!"
-          placeholderTextColor="#666666"
-          value={introMessage}
-          onChangeText={setIntroMessage}
-        />
-      </CustomModal>
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FDFBF7',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 28,
-    
-    color: '#111111',
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 10,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EBE6DA',
+    paddingBottom: 16,
   },
-  listContent: {
-    padding: 16,
-    paddingBottom: 100, // Make room for FAB
+  logo: {
+    fontSize: 28,
+    color: '#1A1A1A',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
   },
-  card: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 12,
+  iconButton: {
+    padding: 4,
+    position: 'relative',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#C05C41',
     borderWidth: 1,
-    borderColor: '#EBE6DA',
+    borderColor: '#FAF8F5',
   },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 22,
-    
-    color: '#111111',
-    flex: 1,
-  },
-  mineBadge: {
-    backgroundColor: 'rgba(222, 183, 133, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#deb785',
-    marginLeft: 10,
-  },
-  mineBadgeText: {
-    color: '#deb785',
-    fontSize: 16,
-    
-  },
-  description: {
-    color: '#333333',
-    fontSize: 19,
-    lineHeight: 22,
+  titleArea: {
+    paddingHorizontal: 20,
     marginBottom: 16,
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  title: {
+    fontSize: 40,
+    color: '#1A1A1A',
+    marginBottom: 4,
   },
-  creatorName: {
-    color: '#666666',
-    fontSize: 17,
-  },
-  dateText: {
-    color: '#666666',
+  subtitle: {
     fontSize: 16,
+    color: '#A0988F',
   },
-  emptyContainer: {
-    padding: 40,
-    alignItems: 'center',
+  categoriesContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
-  emptyText: {
-    color: '#666666',
-    fontSize: 20,
-    textAlign: 'center',
+  listContent: {
+    paddingBottom: 100,
   },
   fab: {
     position: 'absolute',
     bottom: 24,
     right: 24,
-    backgroundColor: '#deb785',
+    backgroundColor: '#C05C41',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 14,
-    borderRadius: 24,
-    elevation: 5,
+    borderRadius: 30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+    gap: 8,
   },
   fabText: {
-    color: '#ffffff',
-    fontSize: 20,
-    
-  },
-  input: {
-    backgroundColor: '#FDFBF7',
-    color: '#111111',
-    borderWidth: 1,
-    borderColor: '#EBE6DA',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 16,
-  },
-  textArea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  resolveBtn: {
-    marginTop: 12,
-    paddingVertical: 8,
-    backgroundColor: 'rgba(255, 123, 114, 0.1)',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#FF7B72',
-    alignItems: 'center',
-  },
-  resolveBtnText: {
-    color: '#FF7B72',
-    
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   }
 });
